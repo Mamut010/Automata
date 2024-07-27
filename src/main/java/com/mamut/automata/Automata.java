@@ -40,10 +40,10 @@ public class Automata {
     }
     
     public static DfaState config1() {
-        DfaState q0 = new DfaState(false);
-        DfaState q1 = new DfaState(false);
+        DfaState q0 = new DfaState();
+        DfaState q1 = new DfaState();
         DfaState q2 = new DfaState(true);
-        DfaState q3 = new DfaState(false);
+        DfaState q3 = new DfaState();
         
         q0.addTransition(q1, 'a');
         q0.addTransition(q3, 'b');
@@ -59,7 +59,7 @@ public class Automata {
         DfaState q0 = new DfaState(true);
         DfaState q1 = new DfaState(true);
         DfaState q2 = new DfaState(true);
-        DfaState q3 = new DfaState(false);
+        DfaState q3 = new DfaState();
         
         q0.addTransition(q1, '0');
         q0.addSelfLoop('1');

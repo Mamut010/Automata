@@ -21,6 +21,10 @@ public final class DfaState implements State {
         transitions = new TreeMap<>();
     }
     
+    public DfaState() {
+        this(false);
+    }
+    
     @Override
     public boolean isFinal() {
         return isFinalState;

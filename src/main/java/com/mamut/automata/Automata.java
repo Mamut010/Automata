@@ -5,10 +5,11 @@
 package com.mamut.automata;
 
 import com.mamut.automata.contracts.Accepter;
-import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.core.SimpleInputMechanism;
 import com.mamut.automata.finite.deterministic.*;
+import com.mamut.automata.finite.nondeterministic.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -17,11 +18,9 @@ import java.util.List;
 public class Automata {
 
     public static void main(String[] args) {
-        System.out.println("Testing DFA1");
-        testDfa(config1(), List.of("abab", "aaba", "abaaaaaababbbaabba"));
+        testDfa();
         System.out.println();
-        System.out.println("Testing DFA2");
-        testDfa(config2(), List.of("010", "100", "001", "10001", "10101"));
+        testNfa();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -32,14 +31,43 @@ public class Automata {
         });
     }
     
-    public static void testDfa(DfaState initialState, List<String> inputs) {
-        InputMechanism inputMechanism = new SimpleInputMechanism();
-        DfaControlUnit controlUnit = new DfaControlUnit(initialState);
-        DeterministicFiniteAccepter dfa = new DeterministicFiniteAccepter(inputMechanism, controlUnit);
-        testAccepter(dfa, inputs);
+    public static void testDfa() {
+        System.out.println("Testing DFA1");
+        DeterministicFiniteAccepter dfa1 = new DeterministicFiniteAccepter(
+                new SimpleInputMechanism(), 
+                new DfaControlUnit(dfaConfig1())
+        );
+        testAccepter(dfa1, List.of("abab", "aaba", "abaaaaaababbbaabba"));
+        
+        System.out.println();
+        
+        System.out.println("Testing DFA2");
+        DeterministicFiniteAccepter dfa2 = new DeterministicFiniteAccepter(
+                new SimpleInputMechanism(), 
+                new DfaControlUnit(dfaConfig2())
+        );
+        testAccepter(dfa2, List.of("010", "100", "001", "10001", "10101"));
     }
     
-    public static DfaState config1() {
+    public static void testNfa() {
+        System.out.println("Testing NFA1");
+        NondeterministicFiniteAccepter nfa1 = new NondeterministicFiniteAccepter(
+                new SimpleInputMechanism(), 
+                new NfaControlUnit(nfaConfig1())
+        );
+        testAccepter(nfa1, List.of("", "0", "1", "10"));
+        
+        System.out.println();
+        
+        System.out.println("Testing NFA2");
+        NondeterministicFiniteAccepter nfa2 = new NondeterministicFiniteAccepter(
+                new SimpleInputMechanism(), 
+                new NfaControlUnit(nfaConfig2())
+        );
+        testAccepter(nfa2, List.of("", "a", "b", "ab"));
+    }
+    
+    public static DfaState dfaConfig1() {
         DfaState q0 = new DfaState();
         DfaState q1 = new DfaState();
         DfaState q2 = new DfaState(true);
@@ -55,7 +83,7 @@ public class Automata {
         return q0;
     }
     
-    public static DfaState config2() {
+    public static DfaState dfaConfig2() {
         DfaState q0 = new DfaState(true);
         DfaState q1 = new DfaState(true);
         DfaState q2 = new DfaState(true);
@@ -68,6 +96,31 @@ public class Automata {
         q2.addSelfLoop('0');
         q2.addTransition(q3, '1');
         q3.addSelfLoop('0', '1');
+        
+        return q0;
+    }
+    
+    public static NfaState nfaConfig1() {
+        NfaState q0 = new NfaState(true);
+        NfaState q1 = new NfaState();
+        NfaState q2 = new NfaState();
+        
+        q0.addLambdaTransition(q2);
+        q0.addTransition(q1, '1');
+        q1.addTransitions(Set.of(q0, q2), '0');
+        q1.addTransition(q2, '1');
+        
+        return q0;
+    }
+    
+    public static NfaState nfaConfig2() {
+        NfaState q0 = new NfaState();
+        NfaState q1 = new NfaState(true);
+        NfaState q2 = new NfaState();
+        
+        q0.addTransition(q1, 'a');
+        q1.addLambdaTransition(q2);
+        q2.addLambdaTransition(q0);
         
         return q0;
     }

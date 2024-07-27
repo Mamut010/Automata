@@ -20,7 +20,7 @@ public class DfaControlUnit implements ControlUnit {
         }
         
         this.initialState = initialState;
-        currentState = initialState;
+        currentState = null;
     }
     
     public void setInternalState(DfaState state) {

@@ -15,7 +15,7 @@ import java.util.TreeMap;
  *
  * @author Pc
  */
-public class NfaState implements State {
+public final class NfaState implements State {
     private final boolean isFinalState;
     private final Map<Character, Set<NfaState>> transitions;
     private Set<NfaState> lambdaTransitions;

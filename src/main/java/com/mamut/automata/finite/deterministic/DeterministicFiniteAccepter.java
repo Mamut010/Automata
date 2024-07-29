@@ -6,6 +6,7 @@ package com.mamut.automata.finite.deterministic;
 
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.InputMechanism;
+import com.mamut.automata.util.Validators;
 
 /**
  *
@@ -16,9 +17,7 @@ public class DeterministicFiniteAccepter implements Accepter {
     private final DfaControlUnit controlUnit;
     
     public DeterministicFiniteAccepter(InputMechanism inputMechanism, DfaControlUnit controlUnit) {
-        if (inputMechanism == null || controlUnit == null) {
-            throw new IllegalArgumentException();
-        }
+        Validators.ensureNonNull(inputMechanism, controlUnit);
         
         this.inputMechanism = inputMechanism;
         this.controlUnit = controlUnit;
@@ -34,7 +33,12 @@ public class DeterministicFiniteAccepter implements Accepter {
         while (!inputMechanism.isEOF()) {
             char symbol = inputMechanism.advance();
             DfaState currentState = controlUnit.getInternalState();
+            
             DfaState nextState = currentState.nextState(symbol);
+            if (nextState == null) {
+                return false;
+            }
+            
             controlUnit.setInternalState(nextState);
         }
         

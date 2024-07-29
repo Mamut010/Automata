@@ -64,10 +64,7 @@ public final class NfaState implements State {
     
     public Set<NfaState> nextStates(char symbol) {
         Set<NfaState> next = transitions.get(symbol);
-        if (next == null) {
-            next = Set.of(this);
-        }
-        return next;
+        return next != null ? next : Collections.EMPTY_SET;
     }
     
     public Set<NfaState> lambdaTransitions() {

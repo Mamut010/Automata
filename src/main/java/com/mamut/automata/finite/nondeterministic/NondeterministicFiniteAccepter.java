@@ -7,6 +7,7 @@ package com.mamut.automata.finite.nondeterministic;
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.util.CollectionUtils;
+import com.mamut.automata.util.Validators;
 import java.util.Set;
 
 /**
@@ -18,9 +19,7 @@ public class NondeterministicFiniteAccepter implements Accepter {
     private final NfaControlUnit controlUnit;
     
     public NondeterministicFiniteAccepter(InputMechanism inputMechanism, NfaControlUnit controlUnit) {
-        if (inputMechanism == null || controlUnit == null) {
-            throw new IllegalArgumentException();
-        }
+        Validators.ensureNonNull(inputMechanism, controlUnit);
         
         this.inputMechanism = inputMechanism;
         this.controlUnit = controlUnit;
@@ -33,11 +32,12 @@ public class NondeterministicFiniteAccepter implements Accepter {
         }
         controlUnit.initialize();
         
-        while (!inputMechanism.isEOF()) {
+        Set<NfaState> currentStates = controlUnit.getInternalStates();
+        while (!inputMechanism.isEOF() && !currentStates.isEmpty()) {
             char symbol = inputMechanism.advance();
-            Set<NfaState> currentStates = controlUnit.getInternalStates();
             Set<NfaState> nextStates = CollectionUtils.flatMapToSet(currentStates, state -> state.nextStates(symbol));
             controlUnit.setInternalStates(nextStates);
+            currentStates = nextStates;
         }
         
         return controlUnit.isAccepted();

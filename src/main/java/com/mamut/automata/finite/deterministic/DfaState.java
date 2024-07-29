@@ -41,10 +41,6 @@ public final class DfaState implements State {
     }
     
     public DfaState nextState(char symbol) {
-        DfaState next = transitions.get(symbol);
-        if (next == null)  {
-            next = this;
-        }
-        return next;
+        return transitions.get(symbol);
     }
 }

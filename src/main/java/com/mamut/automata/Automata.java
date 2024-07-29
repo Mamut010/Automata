@@ -94,6 +94,7 @@ public class Automata {
         testAccepter(dpda2, List.of("", "#", "a#b", "aa#bb", "ab#ab", "ab#ba", "aa#bbb", "aba#aba"));
     }
     
+    // DFA for Language: ab.{a, b}*
     public static DfaState dfaConfig1() {
         DfaState q0 = new DfaState();
         DfaState q1 = new DfaState();
@@ -110,6 +111,7 @@ public class Automata {
         return q0;
     }
     
+    // DFA for Language: w in {0, 1}* | w does not contain '001'
     public static DfaState dfaConfig2() {
         DfaState q0 = new DfaState(true);
         DfaState q1 = new DfaState(true);
@@ -127,6 +129,7 @@ public class Automata {
         return q0;
     }
     
+    // NFA for Language: (10)^n, n >= 0
     public static NfaState nfaConfig1() {
         NfaState q0 = new NfaState(true);
         NfaState q1 = new NfaState();
@@ -140,6 +143,7 @@ public class Automata {
         return q0;
     }
     
+    // NFA for Language: a^n, n >= 1
     public static NfaState nfaConfig2() {
         NfaState q0 = new NfaState();
         NfaState q1 = new NfaState(true);
@@ -152,7 +156,7 @@ public class Automata {
         return q0;
     }
     
-    // PDA for Language: a^n.b^n
+    // PDA for Language: a^n.b^n, n >= 1
     public static DpdaInitialStateAndSymbol dpdaConfig1() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();

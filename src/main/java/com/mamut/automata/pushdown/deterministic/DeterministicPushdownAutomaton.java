@@ -77,21 +77,31 @@ public class DeterministicPushdownAutomaton implements Accepter {
     
     private boolean processLambdaTransition() {
         DpdaState currentState = controlUnit.getInternalState();
-        
         char storageSymbol = storage.peek();
         TransitionData lambdaTransition = currentState.lambdaTransition(storageSymbol);
-        while (lambdaTransition != null) {
+        TransitionData previousLambdaTransition = null;
+        
+        int iterationCount = 0;
+        final int ITERATION_LIMIT = 1 << 16;
+        
+        while (lambdaTransition != null && !lambdaTransition.equals(previousLambdaTransition)) {
+            iterationCount++;
+            if (iterationCount > ITERATION_LIMIT) {
+                System.err.println("Warning: Exceeded lambda transition iteration limit");
+                return false;
+            }
+            
             StorageOperation operation = lambdaTransition.operation();
             if (operation == null) {
                 return false;
             }
             
             operation.execute(storage);
-            
             currentState = lambdaTransition.state();
             controlUnit.setInternalState(currentState);
             
             storageSymbol = storage.peek();
+            previousLambdaTransition = lambdaTransition;
             lambdaTransition = currentState.lambdaTransition(storageSymbol);
         }
         

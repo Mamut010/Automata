@@ -81,6 +81,17 @@ public class Automata {
                 new PdaStorageDevice(config1.symbol())
         );
         testAccepter(dpda1, List.of("", "ab", "aaabbb", "aaabb", "aabbb"));
+        
+        System.out.println();
+        
+        System.out.println("Testing DPDA2");
+        DpdaInitialStateAndSymbol config2 = dpdaConfig2();
+        DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
+                new SimpleInputMechanism(), 
+                new DpdaControlUnit(config2.state()),
+                new PdaStorageDevice(config2.symbol())
+        );
+        testAccepter(dpda2, List.of("", "#", "a#b", "aa#bb", "ab#ab", "ab#ba", "aa#bbb", "aba#aba"));
     }
     
     public static DfaState dfaConfig1() {
@@ -145,15 +156,37 @@ public class Automata {
     public static DpdaInitialStateAndSymbol dpdaConfig1() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();
-        DpdaState qf = new DpdaState(true);
+        DpdaState q2 = new DpdaState(true);
         
-        q0.addSelfLoop('a', 'a', StorageOperations.push('a'));
-        q0.addSelfLoop('a', 'z', StorageOperations.push('a'));
-        q0.addTransition(q1, 'b', 'a', StorageOperations.pop());
-        q1.addSelfLoop('b', 'a', StorageOperations.pop());
-        q1.addLambdaTransition(qf, 'z', StorageOperations.noop());
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
+        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
+        q0.addTransition(q1, 'b', 'A', StorageOperations.pop());
+        q1.addSelfLoop('b', 'A', StorageOperations.pop());
+        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
-        return new DpdaInitialStateAndSymbol(q0, 'z');
+        return new DpdaInitialStateAndSymbol(q0, 'Z');
+    }
+    
+    // PDA for Language: w.#.w^R
+    public static DpdaInitialStateAndSymbol dpdaConfig2() {
+        DpdaState q0 = new DpdaState();
+        DpdaState q1 = new DpdaState();
+        DpdaState q2 = new DpdaState(true);
+        
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
+        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
+        q0.addSelfLoop('a', 'B', StorageOperations.push('A'));
+        q0.addSelfLoop('b', 'Z', StorageOperations.push('B'));
+        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
+        q0.addSelfLoop('b', 'A', StorageOperations.push('B'));
+        q0.addTransition(q1, '#', 'Z', StorageOperations.noop());
+        q0.addTransition(q1, '#', 'A', StorageOperations.noop());
+        q0.addTransition(q1, '#', 'B', StorageOperations.noop());
+        q1.addSelfLoop('a', 'A', StorageOperations.pop());
+        q1.addSelfLoop('b', 'B', StorageOperations.pop());
+        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        
+        return new DpdaInitialStateAndSymbol(q0, 'Z');
     }
 
     public record DpdaInitialStateAndSymbol(DpdaState state, char symbol) {}

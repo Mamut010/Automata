@@ -75,12 +75,7 @@ public final class DpdaState implements State {
             return null;
         }
         
-        TransitionData transitionData = storageSymbolBasedTransitions.get(symbol);
-        if (transitionData == null)  {
-            return null;
-        }
-        
-        return new TransitionData(transitionData.state(), transitionData.operation());
+        return storageSymbolBasedTransitions.get(symbol);
     }
     
     public TransitionData lambdaTransition(char storageSymbol) {

@@ -9,14 +9,13 @@ import java.util.EmptyStackException;
 /**
  *
  * @author Pc
- * @param <T> Type of stack items
  */
-public interface Stack<T> {
+public interface SymbolStack {
     void clear();
     int size();
     boolean isEmpty();
     
-    T peek() throws EmptyStackException;
-    T pop() throws EmptyStackException;
-    void push(T item);
+    char peek() throws EmptyStackException;
+    char pop() throws EmptyStackException;
+    void push(char symbol);
 }

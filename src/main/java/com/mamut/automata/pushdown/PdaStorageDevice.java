@@ -1,21 +1,33 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.mamut.automata.core;
+package com.mamut.automata.pushdown;
 
-import com.mamut.automata.contracts.Stack;
+import com.mamut.automata.contracts.StorageDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.EmptyStackException;
+import com.mamut.automata.contracts.SymbolStack;
 
 /**
  *
  * @author Pc
  */
-public class DequeStack<T> implements Stack<T> {
-    private final Deque<T> deque = new ArrayDeque<>();
-
+public class PdaStorageDevice implements StorageDevice, SymbolStack {
+    private final Character initialSymbol;
+    private final Deque<Character> deque = new ArrayDeque<>();
+    
+    public PdaStorageDevice(Character initialSymbol) {
+        this.initialSymbol = initialSymbol;
+    }
+    
+    @Override
+    public void initialize() {
+        clear();
+        push(initialSymbol);
+    }
+    
     @Override
     public void clear() {
         deque.clear();
@@ -32,7 +44,7 @@ public class DequeStack<T> implements Stack<T> {
     }
 
     @Override
-    public T peek() throws EmptyStackException {
+    public char peek() throws EmptyStackException {
         if (isEmpty()) {
             throw new EmptyStackException();
         }
@@ -40,7 +52,7 @@ public class DequeStack<T> implements Stack<T> {
     }
 
     @Override
-    public T pop() throws EmptyStackException {
+    public char pop() throws EmptyStackException {
         if (isEmpty()) {
             throw new EmptyStackException();
         }
@@ -48,7 +60,7 @@ public class DequeStack<T> implements Stack<T> {
     }
 
     @Override
-    public void push(T item) {
+    public void push(char item) {
         deque.push(item);
     }
 }

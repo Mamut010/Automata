@@ -8,6 +8,7 @@ import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,14 +33,42 @@ public class NondeterministicFiniteAccepter implements Accepter {
         }
         controlUnit.initialize();
         
-        Set<NfaState> currentStates = controlUnit.getInternalStates();
+        Set<NfaState> currentStates = moveControlUnitToReachableStates();
+        
         while (!inputMechanism.isEOF() && !currentStates.isEmpty()) {
             char symbol = inputMechanism.advance();
             Set<NfaState> nextStates = CollectionUtils.flatMapToSet(currentStates, state -> state.nextStates(symbol));
             controlUnit.setInternalStates(nextStates);
-            currentStates = nextStates;
+            currentStates = moveControlUnitToReachableStates();
         }
         
         return controlUnit.isAccepted();
+    }
+    
+    private Set<NfaState> moveControlUnitToReachableStates() {
+        Set<NfaState> currentStates = controlUnit.getInternalStates();
+        Set<NfaState> directLambdaTransitions = getDirectLambdaTransitions(currentStates);
+        if (directLambdaTransitions.isEmpty()) {
+            return currentStates;
+        }
+        
+        Set<NfaState> reachableStates = new HashSet<>(currentStates);
+        
+        while (!directLambdaTransitions.isEmpty()) {
+            int oldStateCount = reachableStates.size();
+            reachableStates.addAll(directLambdaTransitions);
+            int newStateCount = reachableStates.size();
+            if (newStateCount == oldStateCount) {
+                break;
+            }
+            directLambdaTransitions = getDirectLambdaTransitions(directLambdaTransitions);
+        }
+        
+        controlUnit.setInternalStates(reachableStates);
+        return reachableStates;
+    }
+    
+    private static Set<NfaState> getDirectLambdaTransitions(Set<NfaState> states) {
+        return CollectionUtils.flatMapToSet(states, NfaState::lambdaTransitions);
     }
 }

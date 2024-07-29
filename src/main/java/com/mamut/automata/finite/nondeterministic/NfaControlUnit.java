@@ -31,7 +31,7 @@ public class NfaControlUnit implements ControlUnit {
     }
     
     public void setInternalStates(Set<NfaState> states) {
-        currentStates = getReachableStates(states);
+        currentStates = states;
     }
     
     public Set<NfaState> getInternalStates() {
@@ -46,26 +46,5 @@ public class NfaControlUnit implements ControlUnit {
     @Override
     public boolean isAccepted() {
         return currentStates != null && currentStates.stream().anyMatch(NfaState::isFinal);
-    }
-    
-    private static Set<NfaState> getReachableStates(Set<NfaState> states) {
-        Set<NfaState> reachableStates = new HashSet<>(states);
-        Set<NfaState> directLambdaTransitions = getDirectLambdaTransitions(states);
-        
-        while (!directLambdaTransitions.isEmpty()) {
-            int oldStateCount = reachableStates.size();
-            reachableStates.addAll(directLambdaTransitions);
-            int newStateCount = reachableStates.size();
-            if (newStateCount == oldStateCount) {
-                break;
-            }
-            directLambdaTransitions = getDirectLambdaTransitions(directLambdaTransitions);
-        }
-        
-        return reachableStates;
-    }
-    
-    private static Set<NfaState> getDirectLambdaTransitions(Set<NfaState> states) {
-        return CollectionUtils.flatMapToSet(states, NfaState::lambdaTransitions);
     }
 }

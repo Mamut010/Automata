@@ -7,7 +7,6 @@ package com.mamut.automata.pushdown;
 import com.mamut.automata.contracts.StorageDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.EmptyStackException;
 import com.mamut.automata.contracts.SymbolStack;
 
 /**
@@ -15,46 +14,34 @@ import com.mamut.automata.contracts.SymbolStack;
  * @author Pc
  */
 public class PdaStorageDevice implements StorageDevice, SymbolStack {
-    private final Character initialSymbol;
+    private final char initialSymbol;
     private final Deque<Character> deque = new ArrayDeque<>();
     
-    public PdaStorageDevice(Character initialSymbol) {
+    public PdaStorageDevice(char initialSymbol) {
         this.initialSymbol = initialSymbol;
+        deque.push(initialSymbol);
     }
     
     @Override
     public void initialize() {
-        clear();
-        push(initialSymbol);
-    }
-    
-    @Override
-    public void clear() {
         deque.clear();
-    }
-
-    @Override
-    public int size() {
-        return deque.size();
+        push(initialSymbol);
     }
 
     @Override
     public boolean isEmpty() {
-        return deque.isEmpty();
+        return deque.size() == 1;
     }
 
     @Override
-    public char peek() throws EmptyStackException {
-        if (isEmpty()) {
-            throw new EmptyStackException();
-        }
+    public char peek() {
         return deque.peek();
     }
 
     @Override
-    public char pop() throws EmptyStackException {
+    public char pop() throws IllegalStateException {
         if (isEmpty()) {
-            throw new EmptyStackException();
+            throw new IllegalStateException();
         }
         return deque.pop();
     }

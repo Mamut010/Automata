@@ -4,18 +4,13 @@
  */
 package com.mamut.automata.contracts;
 
-import java.util.EmptyStackException;
-
 /**
  *
  * @author Pc
  */
 public interface SymbolStack {
-    void clear();
-    int size();
     boolean isEmpty();
-    
-    char peek() throws EmptyStackException;
-    char pop() throws EmptyStackException;
+    char peek();
+    char pop() throws IllegalStateException;
     void push(char symbol);
 }

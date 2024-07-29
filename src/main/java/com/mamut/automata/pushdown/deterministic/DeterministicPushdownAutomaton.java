@@ -10,7 +10,6 @@ import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.util.Validators;
-import java.util.EmptyStackException;
 
 /**
  *
@@ -69,7 +68,7 @@ public class DeterministicPushdownAutomaton implements Accepter {
                 }
             }
         }
-        catch (EmptyStackException e) {
+        catch (IllegalStateException e) {
             return false;
         }
         
@@ -77,13 +76,9 @@ public class DeterministicPushdownAutomaton implements Accepter {
     }
     
     private boolean processLambdaTransition() {
-        if (storage.isEmpty()) {
-            return true;
-        }
-        
         DpdaState currentState = controlUnit.getInternalState();
-        char storageSymbol = storage.peek();
         
+        char storageSymbol = storage.peek();
         TransitionData lambdaTransition = currentState.lambdaTransition(storageSymbol);
         while (lambdaTransition != null) {
             StorageOperation operation = lambdaTransition.operation();
@@ -95,6 +90,8 @@ public class DeterministicPushdownAutomaton implements Accepter {
             
             currentState = lambdaTransition.state();
             controlUnit.setInternalState(currentState);
+            
+            storageSymbol = storage.peek();
             lambdaTransition = currentState.lambdaTransition(storageSymbol);
         }
         

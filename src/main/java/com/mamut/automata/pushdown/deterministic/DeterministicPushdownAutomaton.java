@@ -4,7 +4,6 @@
  */
 package com.mamut.automata.pushdown.deterministic;
 
-import com.mamut.automata.pushdown.TransitionData;
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;

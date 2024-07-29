@@ -4,7 +4,6 @@
  */
 package com.mamut.automata.pushdown.deterministic;
 
-import com.mamut.automata.pushdown.TransitionData;
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.util.Validators;

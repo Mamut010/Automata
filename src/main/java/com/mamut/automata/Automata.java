@@ -8,6 +8,9 @@ import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.core.SimpleInputMechanism;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
+import com.mamut.automata.pushdown.PdaStorageDevice;
+import com.mamut.automata.pushdown.StorageOperations;
+import com.mamut.automata.pushdown.deterministic.*;
 import java.util.List;
 import java.util.Set;
 
@@ -18,9 +21,12 @@ import java.util.Set;
 public class Automata {
 
     public static void main(String[] args) {
+        /*
         testDfa();
         System.out.println();
         testNfa();
+        */
+        testDpda();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -65,6 +71,17 @@ public class Automata {
                 new NfaControlUnit(nfaConfig2())
         );
         testAccepter(nfa2, List.of("", "a", "b", "ab"));
+    }
+    
+    public static void testDpda() {
+        System.out.println("Testing DPDA1");
+        DpdaInitialStateAndSymbol config1 = dpdaConfig1();
+        DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
+                new SimpleInputMechanism(), 
+                new DpdaControlUnit(config1.state()),
+                new PdaStorageDevice(config1.symbol())
+        );
+        testAccepter(dpda1, List.of("", "ab", "aaabbb", "aaabb", "aabbb"));
     }
     
     public static DfaState dfaConfig1() {
@@ -124,4 +141,21 @@ public class Automata {
         
         return q0;
     }
+    
+    // PDA for Language: a^n.b^n
+    public static DpdaInitialStateAndSymbol dpdaConfig1() {
+        DpdaState q0 = new DpdaState();
+        DpdaState q1 = new DpdaState();
+        DpdaState qf = new DpdaState(true);
+        
+        q0.addSelfLoop('a', 'a', StorageOperations.push('a'));
+        q0.addSelfLoop('a', 'z', StorageOperations.push('a'));
+        q0.addTransition(q1, 'b', 'a', StorageOperations.pop());
+        q1.addSelfLoop('b', 'a', StorageOperations.pop());
+        q1.addLambdaTransition(qf, 'z', StorageOperations.noop());
+        
+        return new DpdaInitialStateAndSymbol(q0, 'z');
+    }
+
+    public record DpdaInitialStateAndSymbol(DpdaState state, char symbol) {}
 }

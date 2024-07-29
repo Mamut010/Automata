@@ -13,4 +13,5 @@ import com.mamut.automata.contracts.SymbolStack;
  */
 public interface StorageOperation {
     void execute(SymbolStack storage);
+    void revert(SymbolStack storage);
 }

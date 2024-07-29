@@ -5,6 +5,7 @@
 package com.mamut.automata.pushdown.deterministic;
 
 import com.mamut.automata.contracts.Accepter;
+import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
@@ -16,12 +17,12 @@ import com.mamut.automata.util.Validators;
  */
 public class DeterministicPushdownAutomaton implements Accepter {
     private final InputMechanism inputMechanism;
-    private final DpdaControlUnit controlUnit;
+    private final ControlUnit<DpdaState> controlUnit;
     private final PdaStorageDevice storage;
     
     public DeterministicPushdownAutomaton(
             InputMechanism inputMechanism,
-            DpdaControlUnit controlUnit,
+            ControlUnit<DpdaState> controlUnit,
             PdaStorageDevice storage
     ) {
         Validators.ensureNonNull(inputMechanism, controlUnit, storage);

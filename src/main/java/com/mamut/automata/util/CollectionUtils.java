@@ -5,7 +5,10 @@
 package com.mamut.automata.util;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,5 +26,23 @@ public final class CollectionUtils {
         return itemStream
                 .flatMap(item -> mapper.apply(item).stream())
                 .collect(Collectors.toSet());
-    } 
+    }
+    
+    public static <K, T> Set<T> getOrCreateSet(Map<K, Set<T>> map, K key) {
+        Set<T> value = map.get(key);
+        if (value == null) {
+            value = new HashSet<>();
+            map.put(key, value);
+        }
+        return value;
+    }
+    
+    public static <K, U, V> Map<U, V> getOrCreateMap(Map<K, Map<U, V>> map, K key) {
+        Map<U, V> value = map.get(key);
+        if (value == null) {
+            value = new TreeMap<>();
+            map.put(key, value);
+        }
+        return value;
+    }
 }

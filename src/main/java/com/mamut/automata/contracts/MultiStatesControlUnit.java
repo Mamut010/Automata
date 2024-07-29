@@ -4,14 +4,16 @@
  */
 package com.mamut.automata.contracts;
 
+import java.util.Set;
+
 /**
  *
  * @author Pc
  * @param <T> The type of the State
  */
-public interface ControlUnit<T extends State> {
+public interface MultiStatesControlUnit<T extends State> {
     void initialize();
-    void setInternalState(T state);
-    T getInternalState();
+    void setInternalStates(Set<T> states);
+    Set<T> getInternalStates();
     boolean isAccepted();
 }

@@ -6,6 +6,7 @@ package com.mamut.automata.finite.nondeterministic;
 
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.InputMechanism;
+import com.mamut.automata.contracts.MultiStatesControlUnit;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.HashSet;
@@ -17,9 +18,9 @@ import java.util.Set;
  */
 public class NondeterministicFiniteAccepter implements Accepter {
     private final InputMechanism inputMechanism;
-    private final NfaControlUnit controlUnit;
+    private final MultiStatesControlUnit<NfaState> controlUnit;
     
-    public NondeterministicFiniteAccepter(InputMechanism inputMechanism, NfaControlUnit controlUnit) {
+    public NondeterministicFiniteAccepter(InputMechanism inputMechanism, MultiStatesControlUnit<NfaState> controlUnit) {
         Validators.ensureNonNull(inputMechanism, controlUnit);
         
         this.inputMechanism = inputMechanism;

@@ -2,30 +2,34 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mamut.automata.pushdown.deterministic;
+package com.mamut.automata.core;
 
 import com.mamut.automata.contracts.ControlUnit;
+import com.mamut.automata.contracts.State;
 import com.mamut.automata.util.Validators;
 
 /**
  *
  * @author Pc
+ * @param <T> The type of the state
  */
-public class DpdaControlUnit implements ControlUnit {
-    private final DpdaState initialState;
-    private DpdaState currentState;
+public class DefaultControlUnit<T extends State> implements ControlUnit<T> {
+    private final T initialState;
+    private T currentState;
     
-    public DpdaControlUnit(DpdaState initialState) {
+    public DefaultControlUnit(T initialState) {
         Validators.ensureNonNull(initialState);
         this.initialState = initialState;
         currentState = null;
     }
     
-    public void setInternalState(DpdaState state) {
+    @Override
+    public void setInternalState(T state) {
         currentState = state;
     }
     
-    public DpdaState getInternalState() {
+    @Override
+    public T getInternalState() {
         return currentState;
     }
 

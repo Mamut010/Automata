@@ -4,11 +4,11 @@
 
 package com.mamut.automata;
 
+import com.mamut.automata.core.*;
 import com.mamut.automata.contracts.Accepter;
-import com.mamut.automata.core.SimpleInputMechanism;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
-import com.mamut.automata.pushdown.PdaStorageDevice;
+import com.mamut.automata.pushdown.DequeStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import java.util.List;
@@ -40,7 +40,7 @@ public class Automata {
         System.out.println("Testing DFA1");
         DeterministicFiniteAccepter dfa1 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new DfaControlUnit(dfaConfig1())
+                new DefaultControlUnit(dfaConfig1())
         );
         testAccepter(dfa1, List.of("abab", "aaba", "abaaaaaababbbaabba"));
         
@@ -49,7 +49,7 @@ public class Automata {
         System.out.println("Testing DFA2");
         DeterministicFiniteAccepter dfa2 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new DfaControlUnit(dfaConfig2())
+                new DefaultControlUnit(dfaConfig2())
         );
         testAccepter(dfa2, List.of("010", "100", "001", "10001", "10101"));
     }
@@ -58,7 +58,7 @@ public class Automata {
         System.out.println("Testing NFA1");
         NondeterministicFiniteAccepter nfa1 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new NfaControlUnit(nfaConfig1())
+                new DefaultMultiStatesControlUnit(nfaConfig1())
         );
         testAccepter(nfa1, List.of("", "0", "1", "10"));
         
@@ -67,7 +67,7 @@ public class Automata {
         System.out.println("Testing NFA2");
         NondeterministicFiniteAccepter nfa2 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new NfaControlUnit(nfaConfig2())
+                new DefaultMultiStatesControlUnit(nfaConfig2())
         );
         testAccepter(nfa2, List.of("", "a", "b", "ab"));
     }
@@ -77,8 +77,8 @@ public class Automata {
         DpdaInitialStateAndSymbol config1 = dpdaConfig1();
         DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
-                new DpdaControlUnit(config1.state()),
-                new PdaStorageDevice(config1.symbol())
+                new DefaultControlUnit(config1.state()),
+                new DequeStorageDevice(config1.symbol())
         );
         testAccepter(dpda1, List.of("", "ab", "aaabbb", "aaabb", "aabbb"));
         
@@ -88,8 +88,8 @@ public class Automata {
         DpdaInitialStateAndSymbol config2 = dpdaConfig2();
         DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
-                new DpdaControlUnit(config2.state()),
-                new PdaStorageDevice(config2.symbol())
+                new DefaultControlUnit(config2.state()),
+                new DequeStorageDevice(config2.symbol())
         );
         testAccepter(dpda2, List.of("", "#", "a#b", "aa#bb", "ab#ab", "ab#ba", "aa#bbb", "aba#aba"));
     }

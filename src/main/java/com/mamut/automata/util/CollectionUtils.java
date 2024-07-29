@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -17,8 +18,9 @@ public final class CollectionUtils {
     private CollectionUtils() {}
     
     public static <T> Set<T> flatMapToSet(Collection<T> items, Function<T, Collection<T>> mapper) {
-        return items
-                .stream()
+        final int parallelThreshold = 1 << 20;
+        Stream<T> itemStream = items.size() < parallelThreshold ? items.stream() : items.parallelStream();
+        return itemStream
                 .flatMap(item -> mapper.apply(item).stream())
                 .collect(Collectors.toSet());
     } 

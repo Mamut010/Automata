@@ -129,7 +129,7 @@ public class Automata {
         return q0;
     }
     
-    // NFA for Language: (10)^n, n >= 0
+    // NFA for Language: (10)*, n >= 0
     public static NfaState nfaConfig1() {
         NfaState q0 = new NfaState(true);
         NfaState q1 = new NfaState();
@@ -143,7 +143,7 @@ public class Automata {
         return q0;
     }
     
-    // NFA for Language: a^n, n >= 1
+    // NFA for Language: a+
     public static NfaState nfaConfig2() {
         NfaState q0 = new NfaState();
         NfaState q1 = new NfaState(true);

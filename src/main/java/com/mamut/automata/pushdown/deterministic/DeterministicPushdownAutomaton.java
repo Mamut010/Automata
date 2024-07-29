@@ -10,6 +10,7 @@ import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.util.Validators;
+import java.util.EmptyStackException;
 
 /**
  *
@@ -39,31 +40,37 @@ public class DeterministicPushdownAutomaton implements Accepter {
         }
         controlUnit.initialize();
         storage.initialize();
-        if (storage.isEmpty() || !processLambdaTransition()) {
+        
+        if (!processLambdaTransition()) {
             return false;
         }
         
-        while (!inputMechanism.isEOF() && !storage.isEmpty()) {
-            char symbol = inputMechanism.advance();
-            DpdaState currentState = controlUnit.getInternalState();
-            char storageSymbol = storage.peek();
-            
-            TransitionData transition = currentState.transition(symbol, storageSymbol);
-            if (transition == null) {
-                return false;
+        try {
+            while (!inputMechanism.isEOF()) {
+                char symbol = inputMechanism.advance();
+                DpdaState currentState = controlUnit.getInternalState();
+                char storageSymbol = storage.peek();
+
+                TransitionData transition = currentState.transition(symbol, storageSymbol);
+                if (transition == null) {
+                    return false;
+                }
+
+                StorageOperation operation = transition.operation();
+                if (operation == null) {
+                    return false;
+                }
+
+                operation.execute(storage);
+                controlUnit.setInternalState(transition.state());
+
+                if (!processLambdaTransition()) {
+                    return false;
+                }
             }
-            
-            StorageOperation operation = transition.operation();
-            if (operation == null) {
-                return false;
-            }
-            
-            operation.execute(storage);
-            controlUnit.setInternalState(transition.state());
-            
-            if (!processLambdaTransition()) {
-                return false;
-            }
+        }
+        catch (EmptyStackException e) {
+            return false;
         }
         
         return controlUnit.isAccepted();

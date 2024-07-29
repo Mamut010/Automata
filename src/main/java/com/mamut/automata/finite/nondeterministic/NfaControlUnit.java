@@ -5,8 +5,6 @@
 package com.mamut.automata.finite.nondeterministic;
 
 import com.mamut.automata.contracts.ControlUnit;
-import com.mamut.automata.util.CollectionUtils;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

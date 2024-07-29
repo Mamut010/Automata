@@ -37,7 +37,7 @@ public class NondeterministicFiniteAccepter implements Accepter {
         
         while (!inputMechanism.isEOF() && !currentStates.isEmpty()) {
             char symbol = inputMechanism.advance();
-            Set<NfaState> nextStates = CollectionUtils.flatMapToSet(currentStates, state -> state.nextStates(symbol));
+            Set<NfaState> nextStates = getDirectNextStates(currentStates, symbol);
             controlUnit.setInternalStates(nextStates);
             currentStates = moveControlUnitToReachableStates();
         }
@@ -66,6 +66,10 @@ public class NondeterministicFiniteAccepter implements Accepter {
         
         controlUnit.setInternalStates(reachableStates);
         return reachableStates;
+    }
+    
+    private static Set<NfaState> getDirectNextStates(Set<NfaState> currentStates, char symbol) {
+        return CollectionUtils.flatMapToSet(currentStates, state -> state.nextStates(symbol));
     }
     
     private static Set<NfaState> getDirectLambdaTransitions(Set<NfaState> states) {

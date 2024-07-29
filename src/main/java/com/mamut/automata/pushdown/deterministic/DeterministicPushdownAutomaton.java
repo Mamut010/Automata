@@ -41,36 +41,40 @@ public class DeterministicPushdownAutomaton implements Accepter {
         controlUnit.initialize();
         storage.initialize();
         
+        try {
+            return testImpl();
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
+    }
+    
+    private boolean testImpl() {
         if (!processLambdaTransition()) {
             return false;
         }
         
-        try {
-            while (!inputMechanism.isEOF()) {
-                char symbol = inputMechanism.advance();
-                DpdaState currentState = controlUnit.getInternalState();
-                char storageSymbol = storage.peek();
+        while (!inputMechanism.isEOF()) {
+            char symbol = inputMechanism.advance();
+            DpdaState currentState = controlUnit.getInternalState();
+            char storageSymbol = storage.peek();
 
-                TransitionData<DpdaState> transition = currentState.transition(symbol, storageSymbol);
-                if (transition == null) {
-                    return false;
-                }
-
-                StorageOperation operation = transition.operation();
-                if (operation == null) {
-                    return false;
-                }
-
-                operation.execute(storage);
-                controlUnit.setInternalState(transition.state());
-
-                if (!processLambdaTransition()) {
-                    return false;
-                }
+            TransitionData<DpdaState> transition = currentState.transition(symbol, storageSymbol);
+            if (transition == null) {
+                return false;
             }
-        }
-        catch (IllegalStateException e) {
-            return false;
+
+            StorageOperation operation = transition.operation();
+            if (operation == null) {
+                return false;
+            }
+
+            operation.execute(storage);
+            controlUnit.setInternalState(transition.state());
+
+            if (!processLambdaTransition()) {
+                return false;
+            }
         }
         
         return controlUnit.isAccepted();

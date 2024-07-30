@@ -20,7 +20,7 @@ import java.util.Set;
  * @author Pc
  */
 public class NondeterministicPushdownAutomaton implements Accepter {
-    private record Configuration(NpdaState state, Character inputSymbol, String storageSnapshot) {}
+    private record Configuration(NpdaState state, int inputMechanismPosition, String storageSnapshot) {}
     
     private final BacktrackableInputMechanism inputMechanism;
     private final ControlUnit<NpdaState> controlUnit;
@@ -138,15 +138,8 @@ public class NondeterministicPushdownAutomaton implements Accepter {
     
     private Configuration getCurrentConfiguration() {
         NpdaState currentState = controlUnit.getInternalState();
-        Character storageSymbol = peekNextInputSymbol();
+        int position = inputMechanism.getPosition();
         String storageSnapshot = storage.snapshot();
-        return new Configuration(currentState, storageSymbol, storageSnapshot);
-    }
-    
-    private Character peekNextInputSymbol() {
-        inputMechanism.markPosition();
-        Character inputSymbol = inputMechanism.advance();
-        inputMechanism.returnToLastMarkedPosition();
-        return inputSymbol;
+        return new Configuration(currentState, position, storageSnapshot);
     }
 }

@@ -41,7 +41,7 @@ public class Automata {
     }
     
     public static void testDfa() {
-        System.out.println("Testing DFA1");
+        System.out.println("Testing DFA1 - Language: ab.(a+b)*");
         DeterministicFiniteAccepter dfa1 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
                 new DefaultControlUnit(dfaConfig1())
@@ -50,16 +50,16 @@ public class Automata {
         
         System.out.println();
         
-        System.out.println("Testing DFA2");
+        System.out.println("Testing DFA2 - Language: w in (0+1)* | w does not contain '001'");
         DeterministicFiniteAccepter dfa2 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
                 new DefaultControlUnit(dfaConfig2())
         );
-        testAccepter(dfa2, List.of("010", "100", "001", "10001", "10101"));
+        testAccepter(dfa2, List.of("", "010", "100", "001", "10001", "10101"));
     }
     
     public static void testNfa() {
-        System.out.println("Testing NFA1");
+        System.out.println("Testing NFA1 - Language: (10)*");
         NondeterministicFiniteAccepter nfa1 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
                 new DefaultMultiStatesControlUnit(nfaConfig1())
@@ -68,7 +68,7 @@ public class Automata {
         
         System.out.println();
         
-        System.out.println("Testing NFA2");
+        System.out.println("Testing NFA2 - Language: a+");
         NondeterministicFiniteAccepter nfa2 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
                 new DefaultMultiStatesControlUnit(nfaConfig2())
@@ -77,7 +77,7 @@ public class Automata {
     }
     
     public static void testDpda() {
-        System.out.println("Testing DPDA1");
+        System.out.println("Testing DPDA1 - Language: a^n.b^n, n >= 1");
         InitialStateAndSymbol<DpdaState> config1 = dpdaConfig1();
         DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
@@ -88,7 +88,7 @@ public class Automata {
         
         System.out.println();
         
-        System.out.println("Testing DPDA2");
+        System.out.println("Testing DPDA2 - Language: w.#.w^R");
         InitialStateAndSymbol<DpdaState> config2 = dpdaConfig2();
         DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
@@ -99,7 +99,7 @@ public class Automata {
     }
     
     public static void testNpda() {
-        System.out.println("Testing NPDA1");
+        System.out.println("Testing NPDA1 - Language: w.(a+b)?.w^R (Palindrome)");
         InitialStateAndSymbol<NpdaState> config1 = npdaConfig1();
         NondeterministicPushdownAutomaton npda1 = new NondeterministicPushdownAutomaton(
                 new PositionBufferedInputMechanism(), 
@@ -110,7 +110,7 @@ public class Automata {
         
         System.out.println();
         
-        System.out.println("Testing NPDA2");
+        System.out.println("Testing NPDA2 - Grammar: S -> aSbb | a");
         InitialStateAndSymbol<NpdaState> config2 = npdaConfig2();
         NondeterministicPushdownAutomaton npda2 = new NondeterministicPushdownAutomaton(
                 new PositionBufferedInputMechanism(), 
@@ -120,7 +120,10 @@ public class Automata {
         testAccepter(npda2, List.of("", "a", "b", "aabb", "aabbb", "aaabbbb"));
     }
     
-    // DFA for Language: ab.{a, b}*
+    /**
+     * DFA for Language: ab.(a+b)*
+     * @return The initial state
+     */
     public static DfaState dfaConfig1() {
         DfaState q0 = new DfaState();
         DfaState q1 = new DfaState();
@@ -137,7 +140,10 @@ public class Automata {
         return q0;
     }
     
-    // DFA for Language: w in {0, 1}* | w does not contain '001'
+    /**
+     * DFA for Language: w in (0+1)* | w does not contain '001'
+     * @return The initial state
+     */
     public static DfaState dfaConfig2() {
         DfaState q0 = new DfaState(true);
         DfaState q1 = new DfaState(true);
@@ -155,7 +161,10 @@ public class Automata {
         return q0;
     }
     
-    // NFA for Language: (10)*, n >= 0
+    /**
+     * NFA for Language: (10)*
+     * @return The initial state
+     */
     public static NfaState nfaConfig1() {
         NfaState q0 = new NfaState(true);
         NfaState q1 = new NfaState();
@@ -169,7 +178,10 @@ public class Automata {
         return q0;
     }
     
-    // NFA for Language: a+
+    /**
+     * NFA for Language: a+
+     * @return The initial state
+     */
     public static NfaState nfaConfig2() {
         NfaState q0 = new NfaState();
         NfaState q1 = new NfaState(true);
@@ -182,7 +194,10 @@ public class Automata {
         return q0;
     }
     
-    // PDA for Language: a^n.b^n, n >= 1
+    /**
+     * PDA for Language: a^n.b^n, n >= 1
+     * @return The configuration including initial state and storage symbol
+     */
     public static InitialStateAndSymbol<DpdaState> dpdaConfig1() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();
@@ -197,7 +212,10 @@ public class Automata {
         return new InitialStateAndSymbol(q0, 'Z');
     }
     
-    // PDA for Language: w.#.w^R
+    /**
+     * PDA for Language: w.#.w^R
+     * @return The configuration including initial state and storage symbol
+     */
     public static InitialStateAndSymbol<DpdaState> dpdaConfig2() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();
@@ -219,7 +237,10 @@ public class Automata {
         return new InitialStateAndSymbol(q0, 'Z');
     }
     
-    // NPDA for Language: w(a+b)?w^R (Palindrome)
+    /**
+     * NPDA for Language: w.(a+b)?.w^R (Palindrome)
+     * @return The configuration including initial state and storage symbol
+     */
     public static InitialStateAndSymbol<NpdaState> npdaConfig1() {
         NpdaState q0 = new NpdaState();
         NpdaState q1 = new NpdaState();
@@ -240,7 +261,10 @@ public class Automata {
         return new InitialStateAndSymbol(q0, 'Z');
     }
     
-    // NPDA for Grammar: S -> aSbb | a
+    /**
+     * NPDA for Grammar: S -> aSbb | a
+     * @return The configuration including initial state and storage symbol
+     */
     public static InitialStateAndSymbol<NpdaState> npdaConfig2() {
         NpdaState q0 = new NpdaState();
         NpdaState q1 = new NpdaState();

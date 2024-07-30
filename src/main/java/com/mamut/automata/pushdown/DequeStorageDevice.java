@@ -48,4 +48,9 @@ public class DequeStorageDevice implements PdaStorageDevice {
     public void push(char item) {
         deque.push(item);
     }
+    
+    @Override
+    public String toString() {
+        return deque.toString();
+    }
 }

@@ -6,20 +6,20 @@ package com.mamut.automata.pushdown.operations;
 
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.contracts.SymbolStack;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import com.mamut.automata.util.DequeStack;
+import com.mamut.automata.util.Stack;
 
 /**
  *
  * @author Pc
  */
 public class PopStorageOperation implements StorageOperation {
-    private Deque<Character> poppedSymbols;
+    private Stack<Character> poppedSymbols;
     
     @Override
     public void execute(SymbolStack storage) {
         if (poppedSymbols == null) {
-            poppedSymbols = new ArrayDeque<>();
+            poppedSymbols = new DequeStack<>();
         }
         
         char poppedSymbol = storage.pop();

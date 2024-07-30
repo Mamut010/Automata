@@ -47,12 +47,7 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         storage.initialize();
         depth = 0;
         
-        try {
-            return testImpl();
-        }
-        catch (IllegalStateException e) {
-            return false;
-        }
+        return testImpl();
     }
     
     private boolean testImpl() {
@@ -60,30 +55,35 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         if (depth > DEPTH_LIMIT) {
             throw new RuntimeException("An infinite NPDA recursion occured");
         }
-        
+
+        boolean result;
+        try {
+            if (inputMechanism.isEOF()) {
+                result = handleEOF();
+            }
+            else if (checkLambdaTransitions()) {
+                result = true;
+            }
+            else {
+                result = checkNormalTransitions();
+            }
+
+            depth--;
+            return result;
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
+    }
+    
+    private boolean handleEOF() {
+        return controlUnit.isAccepted() || checkLambdaTransitions();
+    }
+    
+    private boolean checkLambdaTransitions() {
         NpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
-        boolean result;
         
-        if (inputMechanism.isEOF()) {
-            result = handleEOF(currentState, storageSymbol);
-        }
-        else if (checkLambdaTransitions(currentState, storageSymbol)) {
-            result = true;
-        }
-        else {
-            result = checkNormalTransitions(currentState, storageSymbol);
-        }
-        
-        depth--;
-        return result;
-    }
-    
-    private boolean handleEOF(NpdaState currentState, char storageSymbol) {
-        return controlUnit.isAccepted() || checkLambdaTransitions(currentState, storageSymbol);
-    }
-    
-    private boolean checkLambdaTransitions(NpdaState currentState, char storageSymbol) {
         Set<TransitionData<NpdaState>> lambdaTransitions = CollectionUtils.union(
                 currentState.lambdaTransitions(storageSymbol), 
                 currentState.epsilonLambdaTransitions()
@@ -107,10 +107,12 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         return false;
     }
     
-    private boolean checkNormalTransitions(NpdaState currentState, char storageSymbol) {
+    private boolean checkNormalTransitions() {
         inputMechanism.markPosition();
         
         char symbol = inputMechanism.advance();
+        NpdaState currentState = controlUnit.getInternalState();
+        char storageSymbol = storage.peek();
         
         Set<TransitionData<NpdaState>> transitions = CollectionUtils.union(
                 currentState.transitions(symbol, storageSymbol),

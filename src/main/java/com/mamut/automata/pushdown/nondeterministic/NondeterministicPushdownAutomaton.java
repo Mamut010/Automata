@@ -12,6 +12,7 @@ import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.pushdown.TransitionData;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -19,8 +20,7 @@ import java.util.Set;
  * @author Pc
  */
 public class NondeterministicPushdownAutomaton implements Accepter {
-    private int depth = 0;
-    private final int DEPTH_LIMIT = 1 << 10;
+    private record Configuration(NpdaState state, Character inputSymbol, String storageSnapshot) {}
     
     private final BacktrackableInputMechanism inputMechanism;
     private final ControlUnit<NpdaState> controlUnit;
@@ -45,30 +45,28 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         }
         controlUnit.initialize();
         storage.initialize();
-        depth = 0;
         
-        return testImpl();
+        return testImpl(new HashSet<>());
     }
     
-    private boolean testImpl() {
-        depth++;
-        if (depth > DEPTH_LIMIT) {
-            throw new RuntimeException("An infinite NPDA recursion occured");
+    private boolean testImpl(Set<Configuration> visited) {
+        Configuration currentConfiguration = getCurrentConfiguration();
+        if (!visited.add(currentConfiguration)) {
+            return false;
         }
 
         boolean result;
         try {
             if (inputMechanism.isEOF()) {
-                result = handleEOF();
+                result = handleEOF(visited);
             }
-            else if (checkLambdaTransitions()) {
+            else if (checkLambdaTransitions(visited)) {
                 result = true;
             }
             else {
-                result = checkNormalTransitions();
+                result = checkNormalTransitions(visited);
             }
 
-            depth--;
             return result;
         }
         catch (IllegalStateException e) {
@@ -76,11 +74,11 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         }
     }
     
-    private boolean handleEOF() {
-        return controlUnit.isAccepted() || checkLambdaTransitions();
+    private boolean handleEOF(Set<Configuration> visited) {
+        return controlUnit.isAccepted() || checkLambdaTransitions(visited);
     }
     
-    private boolean checkLambdaTransitions() {
+    private boolean checkLambdaTransitions(Set<Configuration> visited) {
         NpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
         
@@ -96,7 +94,7 @@ public class NondeterministicPushdownAutomaton implements Accepter {
             operation.execute(storage);
             controlUnit.setInternalState(nextState);
             
-            if (testImpl()) {
+            if (testImpl(visited)) {
                 return true;
             }
             
@@ -107,7 +105,7 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         return false;
     }
     
-    private boolean checkNormalTransitions() {
+    private boolean checkNormalTransitions(Set<Configuration> visited) {
         inputMechanism.markPosition();
         
         char symbol = inputMechanism.advance();
@@ -126,7 +124,7 @@ public class NondeterministicPushdownAutomaton implements Accepter {
             operation.execute(storage);
             controlUnit.setInternalState(nextState);
             
-            if (testImpl()) {
+            if (testImpl(visited)) {
                 return true;
             }
             
@@ -136,5 +134,19 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         
         inputMechanism.returnToLastMarkedPosition();
         return false;
+    }
+    
+    private Configuration getCurrentConfiguration() {
+        NpdaState currentState = controlUnit.getInternalState();
+        Character storageSymbol = peekNextInputSymbol();
+        String storageSnapshot = storage.snapshot();
+        return new Configuration(currentState, storageSymbol, storageSnapshot);
+    }
+    
+    private Character peekNextInputSymbol() {
+        inputMechanism.markPosition();
+        Character inputSymbol = inputMechanism.advance();
+        inputMechanism.returnToLastMarkedPosition();
+        return inputSymbol;
     }
 }

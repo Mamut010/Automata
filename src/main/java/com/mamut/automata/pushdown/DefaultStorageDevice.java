@@ -4,36 +4,39 @@
  */
 package com.mamut.automata.pushdown;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import com.mamut.automata.util.DequeStack;
+import com.mamut.automata.util.Stack;
 
 /**
  *
  * @author Pc
  */
-public class DequeStorageDevice implements PdaStorageDevice {
+public class DefaultStorageDevice implements PdaStorageDevice {
     private final char initialSymbol;
-    private final Deque<Character> deque = new ArrayDeque<>();
+    private final Stack<Character> stack = new DequeStack<>();
     
-    public DequeStorageDevice(char initialSymbol) {
+    public DefaultStorageDevice(char initialSymbol) {
         this.initialSymbol = initialSymbol;
-        deque.push(initialSymbol);
+        stack.push(initialSymbol);
     }
     
     @Override
     public void initialize() {
-        deque.clear();
+        stack.clear();
         push(initialSymbol);
     }
 
     @Override
     public boolean isEmpty() {
-        return deque.size() == 1;
+        return stack.isEmpty();
     }
 
     @Override
     public char peek() {
-        return deque.peek();
+        if (isEmpty()) {
+            throw new IllegalStateException();
+        }
+        return stack.peek();
     }
 
     @Override
@@ -41,16 +44,16 @@ public class DequeStorageDevice implements PdaStorageDevice {
         if (isEmpty()) {
             throw new IllegalStateException();
         }
-        return deque.pop();
+        return stack.pop();
     }
 
     @Override
     public void push(char item) {
-        deque.push(item);
+        stack.push(item);
     }
     
     @Override
     public String toString() {
-        return deque.toString();
+        return stack.toString();
     }
 }

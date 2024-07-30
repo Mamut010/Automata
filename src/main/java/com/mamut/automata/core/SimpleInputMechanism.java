@@ -40,4 +40,9 @@ public final class SimpleInputMechanism implements InputMechanism {
             return inputFile.charAt(index++);
         }
     }
+    
+    @Override
+    public int getPosition() {
+        return index;
+    }
 }

@@ -12,4 +12,5 @@ public interface InputMechanism {
     boolean loadInputFile(String inputFile);
     boolean isEOF();
     Character advance();
+    int getPosition();
 }

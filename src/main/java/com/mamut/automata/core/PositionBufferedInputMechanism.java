@@ -47,6 +47,11 @@ public class PositionBufferedInputMechanism implements BacktrackableInputMechani
     }
     
     @Override
+    public int getPosition() {
+        return index;
+    }
+    
+    @Override
     public void markPosition() {
         markedPositions.push(index);
     }

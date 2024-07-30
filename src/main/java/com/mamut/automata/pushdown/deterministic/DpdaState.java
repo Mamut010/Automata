@@ -6,7 +6,7 @@ package com.mamut.automata.pushdown.deterministic;
 
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.pushdown.StorageOperation;
-import com.mamut.automata.pushdown.TransitionData;
+import com.mamut.automata.pushdown.Transition;
 import com.mamut.automata.util.Validators;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,8 +17,8 @@ import java.util.TreeMap;
  */
 public final class DpdaState implements State {
     private final boolean isFinalState;
-    private final Map<Character, Map<Character, TransitionData<DpdaState>>> transitions;
-    private Map<Character, TransitionData<DpdaState>> lambdaTransitions;
+    private final Map<Character, Map<Character, Transition<DpdaState>>> transitions;
+    private Map<Character, Transition<DpdaState>> lambdaTransitions;
     
     public DpdaState(boolean isFinalState) {
         this.isFinalState = isFinalState;
@@ -49,13 +49,13 @@ public final class DpdaState implements State {
             throw new IllegalStateException();
         }
         
-        Map<Character, TransitionData<DpdaState>> storageSymbolBasedTransitions = transitions.get(storageSymbol);
+        Map<Character, Transition<DpdaState>> storageSymbolBasedTransitions = transitions.get(storageSymbol);
         if (storageSymbolBasedTransitions == null) {
             storageSymbolBasedTransitions = new TreeMap<>();
             transitions.put(storageSymbol, storageSymbolBasedTransitions);
         }
         
-        storageSymbolBasedTransitions.put(symbol, new TransitionData(state, operation));
+        storageSymbolBasedTransitions.put(symbol, new Transition(state, operation));
     }
     
     public void addLambdaTransition(DpdaState state, char storageSymbol, StorageOperation operation) {
@@ -67,11 +67,11 @@ public final class DpdaState implements State {
             lambdaTransitions = new TreeMap<>();
         }
         
-        lambdaTransitions.put(storageSymbol, new TransitionData(state, operation));
+        lambdaTransitions.put(storageSymbol, new Transition(state, operation));
     }
     
-    public TransitionData<DpdaState> transition(char symbol, char storageSymbol) {
-        Map<Character, TransitionData<DpdaState>> storageSymbolBasedTransitions = transitions.get(storageSymbol);
+    public Transition<DpdaState> transition(char symbol, char storageSymbol) {
+        Map<Character, Transition<DpdaState>> storageSymbolBasedTransitions = transitions.get(storageSymbol);
         if (storageSymbolBasedTransitions == null) {
             return null;
         }
@@ -79,7 +79,7 @@ public final class DpdaState implements State {
         return storageSymbolBasedTransitions.get(symbol);
     }
     
-    public TransitionData<DpdaState> lambdaTransition(char storageSymbol) {
+    public Transition<DpdaState> lambdaTransition(char storageSymbol) {
         if (lambdaTransitions == null) {
             return null;
         }

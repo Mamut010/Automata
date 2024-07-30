@@ -9,7 +9,7 @@ import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
-import com.mamut.automata.pushdown.TransitionData;
+import com.mamut.automata.pushdown.Transition;
 import com.mamut.automata.util.Validators;
 
 /**
@@ -59,7 +59,7 @@ public class DeterministicPushdownAutomaton implements Accepter {
             DpdaState currentState = controlUnit.getInternalState();
             char storageSymbol = storage.peek();
 
-            TransitionData<DpdaState> transition = currentState.transition(symbol, storageSymbol);
+            Transition<DpdaState> transition = currentState.transition(symbol, storageSymbol);
             if (transition == null) {
                 return false;
             }
@@ -69,8 +69,9 @@ public class DeterministicPushdownAutomaton implements Accepter {
                 return false;
             }
 
+            DpdaState nextState = transition.nextState();
             operation.execute(storage);
-            controlUnit.setInternalState(transition.state());
+            controlUnit.setInternalState(nextState);
 
             if (!processLambdaTransition()) {
                 return false;
@@ -83,8 +84,8 @@ public class DeterministicPushdownAutomaton implements Accepter {
     private boolean processLambdaTransition() {
         DpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
-        TransitionData<DpdaState> lambdaTransition = currentState.lambdaTransition(storageSymbol);
-        TransitionData<DpdaState> previousLambdaTransition = null;
+        Transition<DpdaState> lambdaTransition = currentState.lambdaTransition(storageSymbol);
+        Transition<DpdaState> previousLambdaTransition = null;
         
         int iterationCount = 0;
         final int ITERATION_LIMIT = 1 << 16;
@@ -102,7 +103,7 @@ public class DeterministicPushdownAutomaton implements Accepter {
             }
             
             operation.execute(storage);
-            currentState = lambdaTransition.state();
+            currentState = lambdaTransition.nextState();
             controlUnit.setInternalState(currentState);
             
             storageSymbol = storage.peek();

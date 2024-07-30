@@ -10,5 +10,5 @@ import com.mamut.automata.contracts.State;
  *
  * @author Pc
  */
-public record TransitionData<T extends State>(T state, StorageOperation operation) {
+public record Transition<T extends State>(T nextState, StorageOperation operation) {
 }

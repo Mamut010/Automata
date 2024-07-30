@@ -4,7 +4,7 @@
  */
 package com.mamut.automata.pushdown.nondeterministic;
 
-import com.mamut.automata.pushdown.TransitionData;
+import com.mamut.automata.pushdown.Transition;
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.util.CollectionUtils;
@@ -22,8 +22,8 @@ public class NpdaState implements State {
     private static final Object EPSILON = new Object();
     
     private final boolean isFinalState;
-    private final Map<Object, Map<Character, Set<TransitionData<NpdaState>>>> transitions;
-    private Map<Object, Set<TransitionData<NpdaState>>> lambdaTransitions;
+    private final Map<Object, Map<Character, Set<Transition<NpdaState>>>> transitions;
+    private Map<Object, Set<Transition<NpdaState>>> lambdaTransitions;
     
     public NpdaState(boolean isFinalState) {
         this.isFinalState = isFinalState;
@@ -64,31 +64,31 @@ public class NpdaState implements State {
         addLambdaTransition(state, EPSILON, operation);
     }
     
-    public Set<TransitionData<NpdaState>> transitions(char symbol, char storageSymbol) {
+    public Set<Transition<NpdaState>> transitions(char symbol, char storageSymbol) {
         return transitions(symbol, Character.valueOf(storageSymbol));
     }
     
-    public Set<TransitionData<NpdaState>> epsilonTransitions(char symbol) {
+    public Set<Transition<NpdaState>> epsilonTransitions(char symbol) {
         return transitions(symbol, EPSILON);
     }
     
-    public Set<TransitionData<NpdaState>> lambdaTransitions(char storageSymbol) {
+    public Set<Transition<NpdaState>> lambdaTransitions(char storageSymbol) {
         return lambdaTransitions(Character.valueOf(storageSymbol));
     }
     
-    public Set<TransitionData<NpdaState>> epsilonLambdaTransitions() {
+    public Set<Transition<NpdaState>> epsilonLambdaTransitions() {
         return lambdaTransitions(EPSILON);
     }
     
     private void addTransition(NpdaState state, char symbol, Object storageSymbol, StorageOperation operation) {
         Validators.ensureNonNull(state, storageSymbol, operation);
 
-        Map<Character, Set<TransitionData<NpdaState>>> storageSymbolBasedTransitions = CollectionUtils.getOrCreateMap(
+        Map<Character, Set<Transition<NpdaState>>> storageSymbolBasedTransitions = CollectionUtils.getOrCreateMap(
                 transitions, storageSymbol);
-        Set<TransitionData<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(storageSymbolBasedTransitions, 
+        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(storageSymbolBasedTransitions, 
                 symbol);
         
-        possibleTransitions.add(new TransitionData(state, operation));
+        possibleTransitions.add(new Transition(state, operation));
     }
     
     private void addLambdaTransition(NpdaState state, Object storageSymbol, StorageOperation operation) {
@@ -96,18 +96,18 @@ public class NpdaState implements State {
             lambdaTransitions = new HashMap<>();
         }
         
-        Set<TransitionData<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(lambdaTransitions, storageSymbol);
-        possibleTransitions.add(new TransitionData(state, operation));
+        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(lambdaTransitions, storageSymbol);
+        possibleTransitions.add(new Transition(state, operation));
     }
     
-    private Set<TransitionData<NpdaState>> transitions(char symbol, Object storageSymbol) {
-        Map<Character, Set<TransitionData<NpdaState>>> storageSymbolBasedTransitions = transitions.getOrDefault(
+    private Set<Transition<NpdaState>> transitions(char symbol, Object storageSymbol) {
+        Map<Character, Set<Transition<NpdaState>>> storageSymbolBasedTransitions = transitions.getOrDefault(
                 storageSymbol, Collections.EMPTY_MAP
         );
         return storageSymbolBasedTransitions.getOrDefault(symbol, Collections.EMPTY_SET);
     }
     
-    private Set<TransitionData<NpdaState>> lambdaTransitions(Object storageSymbol) {
+    private Set<Transition<NpdaState>> lambdaTransitions(Object storageSymbol) {
         if (lambdaTransitions == null) {
             return Collections.EMPTY_SET;
         }

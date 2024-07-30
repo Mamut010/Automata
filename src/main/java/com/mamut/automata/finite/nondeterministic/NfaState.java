@@ -35,31 +35,34 @@ public final class NfaState implements State {
         return isFinalState;
     }
     
-    public void addSelfLoop(char... symbols) {
+    public NfaState addSelfLoop(char... symbols) {
         for(char symbol : symbols) {
             addTransition(this, symbol);
         }
+        return this;
     }
     
-    public void addTransition(NfaState state, char symbol) {
-        addTransitions(Set.of(state), symbol);
+    public NfaState addTransition(NfaState state, char symbol) {
+        return addTransitions(Set.of(state), symbol);
     }
     
-    public void addTransitions(Set<NfaState> states, char symbol) {
+    public NfaState addTransitions(Set<NfaState> states, char symbol) {
         Set<NfaState> nextStates = getOrCreateNextStateSet(symbol);
         nextStates.addAll(states);
+        return this;
     }
     
-    public void addLambdaTransition(NfaState state) {
-        addLambdaTransitions(Set.of(state));
+    public NfaState addLambdaTransition(NfaState state) {
+        return addLambdaTransitions(Set.of(state));
     }
     
-    public void addLambdaTransitions(Set<NfaState> states) {
+    public NfaState addLambdaTransitions(Set<NfaState> states) {
         if (lambdaTransitions == null) {
             lambdaTransitions = new HashSet<>();
         }
         
         lambdaTransitions.addAll(states);
+        return this;
     }
     
     public Set<NfaState> nextStates(char symbol) {

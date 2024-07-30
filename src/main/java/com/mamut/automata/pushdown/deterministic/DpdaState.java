@@ -35,15 +35,15 @@ public final class DpdaState implements State {
         return isFinalState;
     }
     
-    public void addSelfLoop(char symbol, char storageSymbol, StorageOperation operation) {
-        addTransition(this, symbol, storageSymbol, operation);
+    public DpdaState addSelfLoop(char symbol, char storageSymbol, StorageOperation operation) {
+        return addTransition(this, symbol, storageSymbol, operation);
     }
     
-    public void addLambdaSelfLoop(char storageSymbol, StorageOperation operation) {
-        addLambdaTransition(this, storageSymbol, operation);
+    public DpdaState addLambdaSelfLoop(char storageSymbol, StorageOperation operation) {
+        return addLambdaTransition(this, storageSymbol, operation);
     }
     
-    public void addTransition(DpdaState state, char symbol, char storageSymbol, StorageOperation operation) {
+    public DpdaState addTransition(DpdaState state, char symbol, char storageSymbol, StorageOperation operation) {
         Validators.ensureNonNull(state, operation);
         if (lambdaTransitions != null && lambdaTransitions.containsKey(storageSymbol)) {
             throw new IllegalStateException();
@@ -56,9 +56,10 @@ public final class DpdaState implements State {
         }
         
         storageSymbolBasedTransitions.put(symbol, new Transition(state, operation));
+        return this;
     }
     
-    public void addLambdaTransition(DpdaState state, char storageSymbol, StorageOperation operation) {
+    public DpdaState addLambdaTransition(DpdaState state, char storageSymbol, StorageOperation operation) {
         if (transitions.containsKey(storageSymbol)) {
             throw new IllegalStateException();
         }
@@ -68,6 +69,7 @@ public final class DpdaState implements State {
         }
         
         lambdaTransitions.put(storageSymbol, new Transition(state, operation));
+        return this;
     }
     
     public Transition<DpdaState> transition(char symbol, char storageSymbol) {

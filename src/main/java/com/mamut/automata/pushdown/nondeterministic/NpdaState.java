@@ -40,28 +40,28 @@ public class NpdaState implements State {
         return isFinalState;
     }
     
-    public void addSelfLoop(char symbol, char storageSymbol, StorageOperation operation) {
-        addTransition(this, symbol, storageSymbol, operation);
+    public NpdaState addSelfLoop(char symbol, char storageSymbol, StorageOperation operation) {
+        return addTransition(this, symbol, storageSymbol, operation);
     }
     
-    public void addLambdaSelfLoop(char storageSymbol, StorageOperation operation) {
-        addLambdaTransition(this, storageSymbol, operation);
+    public NpdaState addLambdaSelfLoop(char storageSymbol, StorageOperation operation) {
+        return addLambdaTransition(this, storageSymbol, operation);
     }
     
-    public void addTransition(NpdaState state, char symbol, char storageSymbol, StorageOperation operation) {
-        addTransition(state, symbol, Character.valueOf(storageSymbol), operation);
+    public NpdaState addTransition(NpdaState state, char symbol, char storageSymbol, StorageOperation operation) {
+        return addTransition(state, symbol, Character.valueOf(storageSymbol), operation);
     }
     
-    public void addEpsilonTransition(NpdaState state, char symbol, StorageOperation operation) {
-        addTransition(state, symbol, EPSILON, operation);
+    public NpdaState addEpsilonTransition(NpdaState state, char symbol, StorageOperation operation) {
+        return addTransition(state, symbol, EPSILON, operation);
     }
     
-    public void addLambdaTransition(NpdaState state, char storageSymbol, StorageOperation operation) {
-        addLambdaTransition(state, Character.valueOf(storageSymbol), operation);
+    public NpdaState addLambdaTransition(NpdaState state, char storageSymbol, StorageOperation operation) {
+        return addLambdaTransition(state, Character.valueOf(storageSymbol), operation);
     }
     
-    public void addEpsilonLambdaTransition(NpdaState state, StorageOperation operation) {
-        addLambdaTransition(state, EPSILON, operation);
+    public NpdaState addEpsilonLambdaTransition(NpdaState state, StorageOperation operation) {
+        return addLambdaTransition(state, EPSILON, operation);
     }
     
     public Set<Transition<NpdaState>> transitions(char symbol, char storageSymbol) {
@@ -80,7 +80,7 @@ public class NpdaState implements State {
         return lambdaTransitions(EPSILON);
     }
     
-    private void addTransition(NpdaState state, char symbol, Object storageSymbol, StorageOperation operation) {
+    private NpdaState addTransition(NpdaState state, char symbol, Object storageSymbol, StorageOperation operation) {
         Validators.ensureNonNull(state, storageSymbol, operation);
 
         Map<Character, Set<Transition<NpdaState>>> storageSymbolBasedTransitions = CollectionUtils.getOrCreateMap(
@@ -89,15 +89,17 @@ public class NpdaState implements State {
                 symbol);
         
         possibleTransitions.add(new Transition(state, operation));
+        return this;
     }
     
-    private void addLambdaTransition(NpdaState state, Object storageSymbol, StorageOperation operation) {
+    private NpdaState addLambdaTransition(NpdaState state, Object storageSymbol, StorageOperation operation) {
         if (lambdaTransitions == null) {
             lambdaTransitions = new HashMap<>();
         }
         
         Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(lambdaTransitions, storageSymbol);
         possibleTransitions.add(new Transition(state, operation));
+        return this;
     }
     
     private Set<Transition<NpdaState>> transitions(char symbol, Object storageSymbol) {

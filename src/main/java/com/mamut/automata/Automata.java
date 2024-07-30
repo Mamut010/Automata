@@ -127,10 +127,10 @@ public class Automata {
         DfaState q2 = new DfaState(true);
         DfaState q3 = new DfaState();
         
-        q0.addTransition(q1, 'a');
-        q0.addTransition(q3, 'b');
-        q1.addTransition(q3, 'a');
-        q1.addTransition(q2, 'b');
+        q0.addTransition(q1, 'a')
+                .addTransition(q3, 'b');
+        q1.addTransition(q3, 'a')
+                .addTransition(q2, 'b');
         q2.addSelfLoop('a', 'b');
         q3.addSelfLoop('a', 'b');
         
@@ -144,12 +144,12 @@ public class Automata {
         DfaState q2 = new DfaState(true);
         DfaState q3 = new DfaState();
         
-        q0.addTransition(q1, '0');
-        q0.addSelfLoop('1');
-        q1.addTransition(q2, '0');
-        q1.addTransition(q0, '1');
-        q2.addSelfLoop('0');
-        q2.addTransition(q3, '1');
+        q0.addTransition(q1, '0')
+                .addSelfLoop('1');
+        q1.addTransition(q2, '0')
+                .addTransition(q0, '1');
+        q2.addSelfLoop('0')
+                .addTransition(q3, '1');
         q3.addSelfLoop('0', '1');
         
         return q0;
@@ -161,10 +161,10 @@ public class Automata {
         NfaState q1 = new NfaState();
         NfaState q2 = new NfaState();
         
-        q0.addLambdaTransition(q2);
-        q0.addTransition(q1, '1');
-        q1.addTransitions(Set.of(q0, q2), '0');
-        q1.addTransition(q2, '1');
+        q0.addLambdaTransition(q2)
+                .addTransition(q1, '1');
+        q1.addTransitions(Set.of(q0, q2), '0')
+                .addTransition(q2, '1');
         
         return q0;
     }
@@ -188,11 +188,11 @@ public class Automata {
         DpdaState q1 = new DpdaState();
         DpdaState q2 = new DpdaState(true);
         
-        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
-        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
-        q0.addTransition(q1, 'b', 'A', StorageOperations.pop());
-        q1.addSelfLoop('b', 'A', StorageOperations.pop());
-        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'))
+                .addSelfLoop('a', 'A', StorageOperations.push('A'))
+                .addTransition(q1, 'b', 'A', StorageOperations.pop());
+        q1.addSelfLoop('b', 'A', StorageOperations.pop())
+                .addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
         return new InitialStateAndSymbol(q0, 'Z');
     }
@@ -203,18 +203,18 @@ public class Automata {
         DpdaState q1 = new DpdaState();
         DpdaState q2 = new DpdaState(true);
         
-        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
-        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
-        q0.addSelfLoop('a', 'B', StorageOperations.push('A'));
-        q0.addSelfLoop('b', 'Z', StorageOperations.push('B'));
-        q0.addSelfLoop('b', 'A', StorageOperations.push('B'));
-        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
-        q0.addTransition(q1, '#', 'Z', StorageOperations.noop());
-        q0.addTransition(q1, '#', 'A', StorageOperations.noop());
-        q0.addTransition(q1, '#', 'B', StorageOperations.noop());
-        q1.addSelfLoop('a', 'A', StorageOperations.pop());
-        q1.addSelfLoop('b', 'B', StorageOperations.pop());
-        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'))
+                .addSelfLoop('a', 'A', StorageOperations.push('A'))
+                .addSelfLoop('a', 'B', StorageOperations.push('A'))
+                .addSelfLoop('b', 'Z', StorageOperations.push('B'))
+                .addSelfLoop('b', 'A', StorageOperations.push('B'))
+                .addSelfLoop('b', 'B', StorageOperations.push('B'))
+                .addTransition(q1, '#', 'Z', StorageOperations.noop())
+                .addTransition(q1, '#', 'A', StorageOperations.noop())
+                .addTransition(q1, '#', 'B', StorageOperations.noop());
+        q1.addSelfLoop('a', 'A', StorageOperations.pop())
+                .addSelfLoop('b', 'B', StorageOperations.pop())
+                .addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
         return new InitialStateAndSymbol(q0, 'Z');
     }
@@ -225,18 +225,17 @@ public class Automata {
         NpdaState q1 = new NpdaState();
         NpdaState q2 = new NpdaState(true);
         
-        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
-        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
-        q0.addSelfLoop('a', 'B', StorageOperations.push('A'));
-        q0.addSelfLoop('b', 'Z', StorageOperations.push('B'));
-        q0.addSelfLoop('b', 'A', StorageOperations.push('B'));
-        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
-        q0.addEpsilonTransition(q1, 'a', StorageOperations.noop());
-        q0.addEpsilonTransition(q1, 'b', StorageOperations.noop());
-        q0.addEpsilonLambdaTransition(q1, StorageOperations.noop());
-        q1.addSelfLoop('a', 'A', StorageOperations.pop());
-        q1.addSelfLoop('b', 'B', StorageOperations.pop());
-        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'))
+                .addSelfLoop('a', 'A', StorageOperations.push('A'))
+                .addSelfLoop('a', 'B', StorageOperations.push('A'))
+                .addSelfLoop('b', 'Z', StorageOperations.push('B'))
+                .addSelfLoop('b', 'A', StorageOperations.push('B'))
+                .addSelfLoop('b', 'B', StorageOperations.push('B'))
+                .addEpsilonTransition(q1, 'b', StorageOperations.noop())
+                .addEpsilonLambdaTransition(q1, StorageOperations.noop());
+        q1.addSelfLoop('a', 'A', StorageOperations.pop())
+                .addSelfLoop('b', 'B', StorageOperations.pop())
+                .addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
         return new InitialStateAndSymbol(q0, 'Z');
     }
@@ -248,11 +247,11 @@ public class Automata {
         NpdaState q2 = new NpdaState(true);
         
         q0.addLambdaTransition(q1, 'Z', StorageOperations.push('S'));
-        q1.addSelfLoop('a', 'S', StorageOperations.replace("SA"));
-        q1.addSelfLoop('a', 'S', StorageOperations.pop());
-        q1.addSelfLoop('b', 'A', StorageOperations.replace("B"));
-        q1.addSelfLoop('b', 'B', StorageOperations.pop());
-        q1.addLambdaTransition(q2, 'Z', StorageOperations.pop());
+        q1.addSelfLoop('a', 'S', StorageOperations.replace("SA"))
+                .addSelfLoop('a', 'S', StorageOperations.pop())
+                .addSelfLoop('b', 'A', StorageOperations.replace("B"))
+                .addSelfLoop('b', 'B', StorageOperations.pop())
+                .addLambdaTransition(q2, 'Z', StorageOperations.pop());
         
         return new InitialStateAndSymbol(q0, 'Z');
     }

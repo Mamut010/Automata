@@ -30,14 +30,16 @@ public final class DfaState implements State {
         return isFinalState;
     }
     
-    public void addSelfLoop(char... symbols) {
+    public DfaState addSelfLoop(char... symbols) {
         for(char symbol : symbols) {
             addTransition(this, symbol);
         }
+        return this;
     }
     
-    public void addTransition(DfaState state, char symbol) {
+    public DfaState addTransition(DfaState state, char symbol) {
         transitions.put(symbol, state);
+        return this;
     }
     
     public DfaState nextState(char symbol) {

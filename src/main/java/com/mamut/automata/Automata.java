@@ -9,7 +9,7 @@ import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
-import com.mamut.automata.pushdown.DequeStorageDevice;
+import com.mamut.automata.pushdown.DefaultStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import com.mamut.automata.pushdown.nondeterministic.*;
@@ -82,7 +82,7 @@ public class Automata {
         DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
                 new DefaultControlUnit(config1.state()),
-                new DequeStorageDevice(config1.symbol())
+                new DefaultStorageDevice(config1.symbol())
         );
         testAccepter(dpda1, List.of("", "ab", "aaabbb", "aaabb", "aabbb"));
         
@@ -93,7 +93,7 @@ public class Automata {
         DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
                 new DefaultControlUnit(config2.state()),
-                new DequeStorageDevice(config2.symbol())
+                new DefaultStorageDevice(config2.symbol())
         );
         testAccepter(dpda2, List.of("", "#", "a#b", "aa#bb", "ab#ab", "ab#ba", "aa#bbb", "aba#aba"));
     }
@@ -104,9 +104,20 @@ public class Automata {
         NondeterministicPushdownAutomaton npda1 = new NondeterministicPushdownAutomaton(
                 new PositionBufferedInputMechanism(), 
                 new DefaultControlUnit(config1.state()),
-                new DequeStorageDevice(config1.symbol())
+                new DefaultStorageDevice(config1.symbol())
         );
         testAccepter(npda1, List.of("", "aba", "abba", "abab", "ababa"));
+        
+        System.out.println();
+        
+        System.out.println("Testing NPDA2");
+        InitialStateAndSymbol<NpdaState> config2 = npdaConfig2();
+        NondeterministicPushdownAutomaton npda2 = new NondeterministicPushdownAutomaton(
+                new PositionBufferedInputMechanism(), 
+                new DefaultControlUnit(config2.state()),
+                new DefaultStorageDevice(config2.symbol())
+        );
+        testAccepter(npda2, List.of("", "a", "b", "aabb", "aabbb", "aaabbbb"));
     }
     
     // DFA for Language: ab.{a, b}*
@@ -226,6 +237,22 @@ public class Automata {
         q1.addSelfLoop('a', 'A', StorageOperations.pop());
         q1.addSelfLoop('b', 'B', StorageOperations.pop());
         q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        
+        return new InitialStateAndSymbol(q0, 'Z');
+    }
+    
+    // NPDA for Grammar: S -> aSbb | a
+    public static InitialStateAndSymbol<NpdaState> npdaConfig2() {
+        NpdaState q0 = new NpdaState();
+        NpdaState q1 = new NpdaState();
+        NpdaState q2 = new NpdaState(true);
+        
+        q0.addLambdaTransition(q1, 'Z', StorageOperations.push('S'));
+        q1.addSelfLoop('a', 'S', StorageOperations.replace("SA"));
+        q1.addSelfLoop('a', 'S', StorageOperations.pop());
+        q1.addSelfLoop('b', 'A', StorageOperations.replace("B"));
+        q1.addSelfLoop('b', 'B', StorageOperations.pop());
+        q1.addLambdaTransition(q2, 'Z', StorageOperations.pop());
         
         return new InitialStateAndSymbol(q0, 'Z');
     }

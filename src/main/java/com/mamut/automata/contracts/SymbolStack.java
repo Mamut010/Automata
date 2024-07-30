@@ -10,7 +10,7 @@ package com.mamut.automata.contracts;
  */
 public interface SymbolStack {
     boolean isEmpty();
-    char peek();
+    char peek() throws IllegalStateException;
     char pop() throws IllegalStateException;
     void push(char symbol);
 }

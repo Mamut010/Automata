@@ -4,11 +4,11 @@
  */
 package com.mamut.automata.pushdown;
 
-import com.mamut.automata.pushdown.deterministic.DpdaState;
+import com.mamut.automata.contracts.State;
 
 /**
  *
  * @author Pc
  */
-public record TransitionData(DpdaState state, StorageOperation operation) {
-};
+public record TransitionData<T extends State>(T state, StorageOperation operation) {
+}

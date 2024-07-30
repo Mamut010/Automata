@@ -16,6 +16,11 @@ public class NoopStorageOperation implements StorageOperation {
     public void execute(SymbolStack storage) {
         // DO NOTHING
     }
+    
+    @Override
+    public void revert(SymbolStack storage) {
+        // DO NOTHING
+    }
 
     @Override
     public boolean equals(Object obj) {

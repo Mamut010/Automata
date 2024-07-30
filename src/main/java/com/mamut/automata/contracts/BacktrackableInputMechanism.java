@@ -7,11 +7,9 @@ package com.mamut.automata.contracts;
 /**
  *
  * @author Pc
- * @param <T> The type of the State
  */
-public interface ControlUnit<T extends State> {
-    void initialize();
-    void setInternalState(T state);
-    T getInternalState();
-    boolean isAccepted();
+public interface BacktrackableInputMechanism extends InputMechanism {
+    void markPosition();
+    void returnToLastMarkedPosition();
+    void discardLastMarkedPosition();
 }

@@ -4,11 +4,12 @@
  */
 package com.mamut.automata.pushdown.deterministic;
 
-import com.mamut.automata.pushdown.TransitionData;
 import com.mamut.automata.contracts.Accepter;
+import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
+import com.mamut.automata.pushdown.TransitionData;
 import com.mamut.automata.util.Validators;
 
 /**
@@ -17,12 +18,12 @@ import com.mamut.automata.util.Validators;
  */
 public class DeterministicPushdownAutomaton implements Accepter {
     private final InputMechanism inputMechanism;
-    private final DpdaControlUnit controlUnit;
+    private final ControlUnit<DpdaState> controlUnit;
     private final PdaStorageDevice storage;
     
     public DeterministicPushdownAutomaton(
             InputMechanism inputMechanism,
-            DpdaControlUnit controlUnit,
+            ControlUnit<DpdaState> controlUnit,
             PdaStorageDevice storage
     ) {
         Validators.ensureNonNull(inputMechanism, controlUnit, storage);
@@ -40,36 +41,40 @@ public class DeterministicPushdownAutomaton implements Accepter {
         controlUnit.initialize();
         storage.initialize();
         
+        try {
+            return testImpl();
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
+    }
+    
+    private boolean testImpl() {
         if (!processLambdaTransition()) {
             return false;
         }
         
-        try {
-            while (!inputMechanism.isEOF()) {
-                char symbol = inputMechanism.advance();
-                DpdaState currentState = controlUnit.getInternalState();
-                char storageSymbol = storage.peek();
+        while (!inputMechanism.isEOF()) {
+            char symbol = inputMechanism.advance();
+            DpdaState currentState = controlUnit.getInternalState();
+            char storageSymbol = storage.peek();
 
-                TransitionData transition = currentState.transition(symbol, storageSymbol);
-                if (transition == null) {
-                    return false;
-                }
-
-                StorageOperation operation = transition.operation();
-                if (operation == null) {
-                    return false;
-                }
-
-                operation.execute(storage);
-                controlUnit.setInternalState(transition.state());
-
-                if (!processLambdaTransition()) {
-                    return false;
-                }
+            TransitionData<DpdaState> transition = currentState.transition(symbol, storageSymbol);
+            if (transition == null) {
+                return false;
             }
-        }
-        catch (IllegalStateException e) {
-            return false;
+
+            StorageOperation operation = transition.operation();
+            if (operation == null) {
+                return false;
+            }
+
+            operation.execute(storage);
+            controlUnit.setInternalState(transition.state());
+
+            if (!processLambdaTransition()) {
+                return false;
+            }
         }
         
         return controlUnit.isAccepted();
@@ -78,8 +83,8 @@ public class DeterministicPushdownAutomaton implements Accepter {
     private boolean processLambdaTransition() {
         DpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
-        TransitionData lambdaTransition = currentState.lambdaTransition(storageSymbol);
-        TransitionData previousLambdaTransition = null;
+        TransitionData<DpdaState> lambdaTransition = currentState.lambdaTransition(storageSymbol);
+        TransitionData<DpdaState> previousLambdaTransition = null;
         
         int iterationCount = 0;
         final int ITERATION_LIMIT = 1 << 16;

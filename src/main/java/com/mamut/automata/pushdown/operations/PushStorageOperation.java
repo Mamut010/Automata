@@ -13,6 +13,7 @@ import com.mamut.automata.contracts.SymbolStack;
  */
 public class PushStorageOperation implements StorageOperation {
     private final char symbol;
+    private int pushCount = 0;
     
     public PushStorageOperation(char symbol) {
         this.symbol = symbol;
@@ -21,6 +22,17 @@ public class PushStorageOperation implements StorageOperation {
     @Override
     public void execute(SymbolStack storage) {
         storage.push(symbol);
+        pushCount++;
+    }
+    
+    @Override
+    public void revert(SymbolStack storage) {
+        if (pushCount == 0) {
+            return;
+        }
+        
+        storage.pop();
+        pushCount--;
     }
 
     @Override

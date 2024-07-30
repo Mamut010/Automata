@@ -6,6 +6,8 @@ package com.mamut.automata.pushdown.operations;
 
 import com.mamut.automata.pushdown.StorageOperation;
 import com.mamut.automata.contracts.SymbolStack;
+import com.mamut.automata.util.DequeStack;
+import com.mamut.automata.util.Stack;
 import java.util.Objects;
 
 /**
@@ -14,6 +16,7 @@ import java.util.Objects;
  */
 public class ReplaceStorageOperation implements StorageOperation {
     private final String symbols;
+    private Stack<Character> poppedSymbols;
     
     public ReplaceStorageOperation(String symbols) {
         this.symbols = symbols != null ? symbols : "";
@@ -21,10 +24,31 @@ public class ReplaceStorageOperation implements StorageOperation {
     
     @Override
     public void execute(SymbolStack storage) {
-        storage.pop();
-        for (int i = symbols.length() - 1; i >= 0; i--) {
-            storage.push(symbols.charAt(i));
+        if (poppedSymbols == null) {
+            poppedSymbols = new DequeStack<>();
         }
+        
+        char poppedSymbol = storage.pop();
+        for (int i = symbols.length() - 1; i >= 0; i--) {
+            char symbol = symbols.charAt(i);
+            storage.push(symbol);
+        }
+        
+        poppedSymbols.push(poppedSymbol);
+    }
+    
+    @Override
+    public void revert(SymbolStack storage) {
+        if (poppedSymbols == null || poppedSymbols.isEmpty()) {
+            return;
+        }
+        
+        for (int i = 0; i < symbols.length(); i++) {
+            storage.pop();
+        }
+        
+        char lastPoppedSymbol = poppedSymbols.pop();
+        storage.push(lastPoppedSymbol);
     }
 
     @Override

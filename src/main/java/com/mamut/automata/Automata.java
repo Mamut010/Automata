@@ -4,13 +4,15 @@
 
 package com.mamut.automata;
 
+import com.mamut.automata.core.*;
 import com.mamut.automata.contracts.Accepter;
-import com.mamut.automata.core.SimpleInputMechanism;
+import com.mamut.automata.contracts.State;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
-import com.mamut.automata.pushdown.PdaStorageDevice;
+import com.mamut.automata.pushdown.DefaultStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
+import com.mamut.automata.pushdown.nondeterministic.*;
 import java.util.List;
 import java.util.Set;
 
@@ -21,11 +23,13 @@ import java.util.Set;
 public class Automata {
 
     public static void main(String[] args) {
-        testDfa();
-        System.out.println();
-        testNfa();
-        System.out.println();
-        testDpda();
+//        testDfa();
+//        System.out.println();
+//        testNfa();
+//        System.out.println();
+//        testDpda();
+//        System.out.println();
+        testNpda();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -40,7 +44,7 @@ public class Automata {
         System.out.println("Testing DFA1");
         DeterministicFiniteAccepter dfa1 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new DfaControlUnit(dfaConfig1())
+                new DefaultControlUnit(dfaConfig1())
         );
         testAccepter(dfa1, List.of("abab", "aaba", "abaaaaaababbbaabba"));
         
@@ -49,7 +53,7 @@ public class Automata {
         System.out.println("Testing DFA2");
         DeterministicFiniteAccepter dfa2 = new DeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new DfaControlUnit(dfaConfig2())
+                new DefaultControlUnit(dfaConfig2())
         );
         testAccepter(dfa2, List.of("010", "100", "001", "10001", "10101"));
     }
@@ -58,7 +62,7 @@ public class Automata {
         System.out.println("Testing NFA1");
         NondeterministicFiniteAccepter nfa1 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new NfaControlUnit(nfaConfig1())
+                new DefaultMultiStatesControlUnit(nfaConfig1())
         );
         testAccepter(nfa1, List.of("", "0", "1", "10"));
         
@@ -67,31 +71,53 @@ public class Automata {
         System.out.println("Testing NFA2");
         NondeterministicFiniteAccepter nfa2 = new NondeterministicFiniteAccepter(
                 new SimpleInputMechanism(), 
-                new NfaControlUnit(nfaConfig2())
+                new DefaultMultiStatesControlUnit(nfaConfig2())
         );
         testAccepter(nfa2, List.of("", "a", "b", "ab"));
     }
     
     public static void testDpda() {
         System.out.println("Testing DPDA1");
-        DpdaInitialStateAndSymbol config1 = dpdaConfig1();
+        InitialStateAndSymbol<DpdaState> config1 = dpdaConfig1();
         DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
-                new DpdaControlUnit(config1.state()),
-                new PdaStorageDevice(config1.symbol())
+                new DefaultControlUnit(config1.state()),
+                new DefaultStorageDevice(config1.symbol())
         );
         testAccepter(dpda1, List.of("", "ab", "aaabbb", "aaabb", "aabbb"));
         
         System.out.println();
         
         System.out.println("Testing DPDA2");
-        DpdaInitialStateAndSymbol config2 = dpdaConfig2();
+        InitialStateAndSymbol<DpdaState> config2 = dpdaConfig2();
         DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
                 new SimpleInputMechanism(), 
-                new DpdaControlUnit(config2.state()),
-                new PdaStorageDevice(config2.symbol())
+                new DefaultControlUnit(config2.state()),
+                new DefaultStorageDevice(config2.symbol())
         );
         testAccepter(dpda2, List.of("", "#", "a#b", "aa#bb", "ab#ab", "ab#ba", "aa#bbb", "aba#aba"));
+    }
+    
+    public static void testNpda() {
+        System.out.println("Testing NPDA1");
+        InitialStateAndSymbol<NpdaState> config1 = npdaConfig1();
+        NondeterministicPushdownAutomaton npda1 = new NondeterministicPushdownAutomaton(
+                new PositionBufferedInputMechanism(), 
+                new DefaultControlUnit(config1.state()),
+                new DefaultStorageDevice(config1.symbol())
+        );
+        testAccepter(npda1, List.of("", "aba", "abba", "abab", "ababa"));
+        
+        System.out.println();
+        
+        System.out.println("Testing NPDA2");
+        InitialStateAndSymbol<NpdaState> config2 = npdaConfig2();
+        NondeterministicPushdownAutomaton npda2 = new NondeterministicPushdownAutomaton(
+                new PositionBufferedInputMechanism(), 
+                new DefaultControlUnit(config2.state()),
+                new DefaultStorageDevice(config2.symbol())
+        );
+        testAccepter(npda2, List.of("", "a", "b", "aabb", "aabbb", "aaabbbb"));
     }
     
     // DFA for Language: ab.{a, b}*
@@ -157,7 +183,7 @@ public class Automata {
     }
     
     // PDA for Language: a^n.b^n, n >= 1
-    public static DpdaInitialStateAndSymbol dpdaConfig1() {
+    public static InitialStateAndSymbol<DpdaState> dpdaConfig1() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();
         DpdaState q2 = new DpdaState(true);
@@ -168,11 +194,11 @@ public class Automata {
         q1.addSelfLoop('b', 'A', StorageOperations.pop());
         q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
-        return new DpdaInitialStateAndSymbol(q0, 'Z');
+        return new InitialStateAndSymbol(q0, 'Z');
     }
     
     // PDA for Language: w.#.w^R
-    public static DpdaInitialStateAndSymbol dpdaConfig2() {
+    public static InitialStateAndSymbol<DpdaState> dpdaConfig2() {
         DpdaState q0 = new DpdaState();
         DpdaState q1 = new DpdaState();
         DpdaState q2 = new DpdaState(true);
@@ -181,8 +207,8 @@ public class Automata {
         q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
         q0.addSelfLoop('a', 'B', StorageOperations.push('A'));
         q0.addSelfLoop('b', 'Z', StorageOperations.push('B'));
-        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
         q0.addSelfLoop('b', 'A', StorageOperations.push('B'));
+        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
         q0.addTransition(q1, '#', 'Z', StorageOperations.noop());
         q0.addTransition(q1, '#', 'A', StorageOperations.noop());
         q0.addTransition(q1, '#', 'B', StorageOperations.noop());
@@ -190,8 +216,46 @@ public class Automata {
         q1.addSelfLoop('b', 'B', StorageOperations.pop());
         q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
         
-        return new DpdaInitialStateAndSymbol(q0, 'Z');
+        return new InitialStateAndSymbol(q0, 'Z');
+    }
+    
+    // NPDA for Language: w(a+b)?w^R (Palindrome)
+    public static InitialStateAndSymbol<NpdaState> npdaConfig1() {
+        NpdaState q0 = new NpdaState();
+        NpdaState q1 = new NpdaState();
+        NpdaState q2 = new NpdaState(true);
+        
+        q0.addSelfLoop('a', 'Z', StorageOperations.push('A'));
+        q0.addSelfLoop('a', 'A', StorageOperations.push('A'));
+        q0.addSelfLoop('a', 'B', StorageOperations.push('A'));
+        q0.addSelfLoop('b', 'Z', StorageOperations.push('B'));
+        q0.addSelfLoop('b', 'A', StorageOperations.push('B'));
+        q0.addSelfLoop('b', 'B', StorageOperations.push('B'));
+        q0.addEpsilonTransition(q1, 'a', StorageOperations.noop());
+        q0.addEpsilonTransition(q1, 'b', StorageOperations.noop());
+        q0.addEpsilonLambdaTransition(q1, StorageOperations.noop());
+        q1.addSelfLoop('a', 'A', StorageOperations.pop());
+        q1.addSelfLoop('b', 'B', StorageOperations.pop());
+        q1.addLambdaTransition(q2, 'Z', StorageOperations.noop());
+        
+        return new InitialStateAndSymbol(q0, 'Z');
+    }
+    
+    // NPDA for Grammar: S -> aSbb | a
+    public static InitialStateAndSymbol<NpdaState> npdaConfig2() {
+        NpdaState q0 = new NpdaState();
+        NpdaState q1 = new NpdaState();
+        NpdaState q2 = new NpdaState(true);
+        
+        q0.addLambdaTransition(q1, 'Z', StorageOperations.push('S'));
+        q1.addSelfLoop('a', 'S', StorageOperations.replace("SA"));
+        q1.addSelfLoop('a', 'S', StorageOperations.pop());
+        q1.addSelfLoop('b', 'A', StorageOperations.replace("B"));
+        q1.addSelfLoop('b', 'B', StorageOperations.pop());
+        q1.addLambdaTransition(q2, 'Z', StorageOperations.pop());
+        
+        return new InitialStateAndSymbol(q0, 'Z');
     }
 
-    public record DpdaInitialStateAndSymbol(DpdaState state, char symbol) {}
+    public record InitialStateAndSymbol<T extends State>(State state, char symbol) {}
 }

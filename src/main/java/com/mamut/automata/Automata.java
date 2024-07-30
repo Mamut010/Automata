@@ -23,12 +23,12 @@ import java.util.Set;
 public class Automata {
 
     public static void main(String[] args) {
-//        testDfa();
-//        System.out.println();
-//        testNfa();
-//        System.out.println();
-//        testDpda();
-//        System.out.println();
+        testDfa();
+        System.out.println();
+        testNfa();
+        System.out.println();
+        testDpda();
+        System.out.println();
         testNpda();
     }
     

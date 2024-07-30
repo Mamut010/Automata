@@ -252,6 +252,7 @@ public class Automata {
                 .addSelfLoop('b', 'Z', StorageOperations.push('B'))
                 .addSelfLoop('b', 'A', StorageOperations.push('B'))
                 .addSelfLoop('b', 'B', StorageOperations.push('B'))
+                .addEpsilonTransition(q1, 'a', StorageOperations.noop())
                 .addEpsilonTransition(q1, 'b', StorageOperations.noop())
                 .addEpsilonLambdaTransition(q1, StorageOperations.noop());
         q1.addSelfLoop('a', 'A', StorageOperations.pop())

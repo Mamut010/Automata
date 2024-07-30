@@ -30,7 +30,7 @@ public class DequeStack<T> implements Stack<T> {
     
     @Override
     public boolean isEmpty() {
-        return deque.size() == 1;
+        return deque.isEmpty();
     }
 
     @Override

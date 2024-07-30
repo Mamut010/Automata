@@ -27,6 +27,7 @@ public class PositionBufferedInputMechanism implements BacktrackableInputMechani
     public boolean loadInputFile(String loadInputFile) {
         inputFile = loadInputFile;
         index = 0;
+        markedPositions.clear();
         return true;
     }
     
@@ -53,7 +54,7 @@ public class PositionBufferedInputMechanism implements BacktrackableInputMechani
     @Override
     public void returnToLastMarkedPosition() {
         if (!markedPositions.isEmpty()) {
-            index = markedPositions.peek();
+            index = markedPositions.pop();
         }
     }
 

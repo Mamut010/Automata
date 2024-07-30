@@ -12,5 +12,5 @@ import com.mamut.automata.contracts.SymbolStack;
  * @author Pc
  */
 public interface PdaStorageDevice extends StorageDevice, SymbolStack {
-    
+    String snapshot();
 }

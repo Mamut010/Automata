@@ -53,7 +53,12 @@ public class DefaultStorageDevice implements PdaStorageDevice {
     }
     
     @Override
-    public String toString() {
+    public String snapshot() {
         return stack.toString();
+    }
+    
+    @Override
+    public String toString() {
+        return snapshot();
     }
 }

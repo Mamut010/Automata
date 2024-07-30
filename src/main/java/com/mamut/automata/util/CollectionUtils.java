@@ -5,10 +5,10 @@
 package com.mamut.automata.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,9 +40,17 @@ public final class CollectionUtils {
     public static <K, U, V> Map<U, V> getOrCreateMap(Map<K, Map<U, V>> map, K key) {
         Map<U, V> value = map.get(key);
         if (value == null) {
-            value = new TreeMap<>();
+            value = new HashMap<>();
             map.put(key, value);
         }
         return value;
+    }
+    
+    public static <T> Set<T> union(Set<T>... sets) {
+        Set<T> result = new HashSet<>();
+        for (Set<T> set : sets) {
+            result.addAll(set);
+        }
+        return result;
     }
 }

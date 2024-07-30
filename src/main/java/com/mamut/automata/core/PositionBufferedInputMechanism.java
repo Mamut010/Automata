@@ -57,11 +57,4 @@ public class PositionBufferedInputMechanism implements BacktrackableInputMechani
             index = markedPositions.pop();
         }
     }
-
-    @Override
-    public void discardLastMarkedPosition() {
-        if (!markedPositions.isEmpty()) {
-            markedPositions.pop();
-        }
-    }
 }

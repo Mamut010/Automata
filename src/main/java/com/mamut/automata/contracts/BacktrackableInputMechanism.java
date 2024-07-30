@@ -11,5 +11,4 @@ package com.mamut.automata.contracts;
 public interface BacktrackableInputMechanism extends InputMechanism {
     void markPosition();
     void returnToLastMarkedPosition();
-    void discardLastMarkedPosition();
 }

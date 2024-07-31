@@ -12,7 +12,7 @@ import java.util.TreeMap;
  *
  * @author Pc
  */
-public final class DfaState implements State {
+public class DfaState implements State {
     private final boolean isFinalState;
     private final Map<Character, DfaState> transitions;
     

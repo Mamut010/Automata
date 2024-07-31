@@ -15,7 +15,7 @@ import java.util.TreeMap;
  *
  * @author Pc
  */
-public final class DpdaState implements State {
+public class DpdaState implements State {
     private final boolean isFinalState;
     private final Map<Character, Map<Character, Transition<DpdaState>>> transitions;
     private Map<Character, Transition<DpdaState>> lambdaTransitions;

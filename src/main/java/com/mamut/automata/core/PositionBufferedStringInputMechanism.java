@@ -13,23 +13,30 @@ import com.mamut.automata.util.Stack;
  * @author Pc
  */
 public class PositionBufferedStringInputMechanism extends StringInputMechanism implements BacktrackableInputMechanism {
-    private final Stack<Integer> markedPositions;
+    private final Stack<Integer> positionBuffer;
     
     public PositionBufferedStringInputMechanism() {
         super();
-        markedPositions = new DequeStack<>();
+        positionBuffer = new DequeStack<>();
+    }
+    
+    @Override
+    public boolean loadInputFile(String inputFile) {
+        positionBuffer.clear();
+        return super.loadInputFile(inputFile);
     }
     
     @Override
     public void markPosition() {
-        markedPositions.push(getPosition());
+        int currentPosition = getPosition();
+        positionBuffer.push(currentPosition);
     }
 
     @Override
     public void returnToLastMarkedPosition() {
-        if (!markedPositions.isEmpty()) {
-            int lastIndex = markedPositions.pop();
-            this.setPosition(lastIndex);
+        if (!positionBuffer.isEmpty()) {
+            int lastPosition = positionBuffer.pop();
+            this.setPosition(lastPosition);
         }
     }
 }

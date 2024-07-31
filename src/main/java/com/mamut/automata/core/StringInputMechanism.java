@@ -19,10 +19,14 @@ public class StringInputMechanism implements InputMechanism {
         index = 0;
     }
     
-    @Override
-    public boolean loadInputFile(String loadInputFile) {
-        inputFile = loadInputFile;
+    public void loadInputString(String input) {
+        this.inputFile = input;
         index = 0;
+    }
+    
+    @Override
+    public boolean loadInputFile(String inputFile) {
+        loadInputString(inputFile);
         return true;
     }
     

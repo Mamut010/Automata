@@ -43,7 +43,7 @@ public class Automata {
     public static void testDfa() {
         System.out.println("Testing DFA1 - Language: ab.(a+b)*");
         DeterministicFiniteAccepter dfa1 = new DeterministicFiniteAccepter(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultControlUnit(dfaConfig1())
         );
         testAccepter(dfa1, List.of("abab", "aaba", "abaaaaaababbbaabba"));
@@ -52,7 +52,7 @@ public class Automata {
         
         System.out.println("Testing DFA2 - Language: w in (0+1)* | w does not contain '001'");
         DeterministicFiniteAccepter dfa2 = new DeterministicFiniteAccepter(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultControlUnit(dfaConfig2())
         );
         testAccepter(dfa2, List.of("", "010", "100", "001", "10001", "10101"));
@@ -61,7 +61,7 @@ public class Automata {
     public static void testNfa() {
         System.out.println("Testing NFA1 - Language: (10)*");
         NondeterministicFiniteAccepter nfa1 = new NondeterministicFiniteAccepter(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultMultiStatesControlUnit(nfaConfig1())
         );
         testAccepter(nfa1, List.of("", "0", "1", "10"));
@@ -70,7 +70,7 @@ public class Automata {
         
         System.out.println("Testing NFA2 - Language: a+");
         NondeterministicFiniteAccepter nfa2 = new NondeterministicFiniteAccepter(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultMultiStatesControlUnit(nfaConfig2())
         );
         testAccepter(nfa2, List.of("", "a", "b", "ab"));
@@ -80,7 +80,7 @@ public class Automata {
         System.out.println("Testing DPDA1 - Language: a^n.b^n, n >= 1");
         InitialStateAndSymbol<DpdaState> config1 = dpdaConfig1();
         DeterministicPushdownAutomaton dpda1 = new DeterministicPushdownAutomaton(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultControlUnit(config1.state()),
                 new DefaultStorageDevice(config1.symbol())
         );
@@ -91,7 +91,7 @@ public class Automata {
         System.out.println("Testing DPDA2 - Language: w.#.w^R");
         InitialStateAndSymbol<DpdaState> config2 = dpdaConfig2();
         DeterministicPushdownAutomaton dpda2 = new DeterministicPushdownAutomaton(
-                new SimpleInputMechanism(), 
+                new StringInputMechanism(), 
                 new DefaultControlUnit(config2.state()),
                 new DefaultStorageDevice(config2.symbol())
         );
@@ -102,7 +102,7 @@ public class Automata {
         System.out.println("Testing NPDA1 - Language: w.(a+b)?.w^R (Palindrome)");
         InitialStateAndSymbol<NpdaState> config1 = npdaConfig1();
         NondeterministicPushdownAutomaton npda1 = new NondeterministicPushdownAutomaton(
-                new PositionBufferedInputMechanism(), 
+                new PositionBufferedStringInputMechanism(), 
                 new DefaultControlUnit(config1.state()),
                 new DefaultStorageDevice(config1.symbol())
         );
@@ -113,7 +113,7 @@ public class Automata {
         System.out.println("Testing NPDA2 - Grammar: S -> aSbb | a");
         InitialStateAndSymbol<NpdaState> config2 = npdaConfig2();
         NondeterministicPushdownAutomaton npda2 = new NondeterministicPushdownAutomaton(
-                new PositionBufferedInputMechanism(), 
+                new PositionBufferedStringInputMechanism(), 
                 new DefaultControlUnit(config2.state()),
                 new DefaultStorageDevice(config2.symbol())
         );

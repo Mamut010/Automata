@@ -4,30 +4,29 @@
  */
 package com.mamut.automata.core;
 
-import com.mamut.automata.contracts.BacktrackableInputMechanism;
-import com.mamut.automata.util.DequeStack;
-import com.mamut.automata.util.Stack;
+import com.mamut.automata.contracts.InputMechanism;
 
 /**
  *
  * @author Pc
  */
-public class PositionBufferedInputMechanism implements BacktrackableInputMechanism {
+public class StringInputMechanism implements InputMechanism {
     private String inputFile;
     private int index;
-    private final Stack<Integer> markedPositions;
     
-    public PositionBufferedInputMechanism() {
+    public StringInputMechanism() {
         inputFile = null;
         index = 0;
-        markedPositions = new DequeStack<>();
+    }
+    
+    public void loadInputString(String input) {
+        this.inputFile = input;
+        index = 0;
     }
     
     @Override
-    public boolean loadInputFile(String loadInputFile) {
-        inputFile = loadInputFile;
-        index = 0;
-        markedPositions.clear();
+    public boolean loadInputFile(String inputFile) {
+        loadInputString(inputFile);
         return true;
     }
     
@@ -51,15 +50,10 @@ public class PositionBufferedInputMechanism implements BacktrackableInputMechani
         return index;
     }
     
-    @Override
-    public void markPosition() {
-        markedPositions.push(index);
-    }
-
-    @Override
-    public void returnToLastMarkedPosition() {
-        if (!markedPositions.isEmpty()) {
-            index = markedPositions.pop();
+    protected void setPosition(int index) {
+        if (index < 0 || index > inputFile.length()) {
+            throw new IllegalArgumentException();
         }
+        this.index = index;
     }
 }

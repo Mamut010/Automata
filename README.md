@@ -6,3 +6,4 @@ Currently having:
 - Nondeterministic Finite Accepter
 - Deterministic Pushdown Automaton
 - Nondeterministic Pushdown Automaton
+- Turing Machine

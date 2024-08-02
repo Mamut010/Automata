@@ -7,12 +7,18 @@ package com.mamut.automata;
 import com.mamut.automata.core.*;
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.State;
+import com.mamut.automata.contracts.Transducer;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
 import com.mamut.automata.pushdown.DefaultStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import com.mamut.automata.pushdown.nondeterministic.*;
+import com.mamut.automata.turing.DefaultReadWriteHead;
+import com.mamut.automata.turing.InfiniteTape;
+import com.mamut.automata.turing.Movements;
+import com.mamut.automata.turing.deterministic.DtmState;
+import com.mamut.automata.turing.deterministic.TuringMachine;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +27,7 @@ import java.util.Set;
  * @author Pc
  */
 public class Automata {
+    private static final Character BLANK = null;
 
     public static void main(String[] args) {
         testDfa();
@@ -30,12 +37,32 @@ public class Automata {
         testDpda();
         System.out.println();
         testNpda();
+        System.out.println();
+        testDtm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
         inputs.stream().forEach(input -> {
             boolean accepted = accepter.test(input);
             String outputMsg = "Test '%s': %s".formatted(input, accepted ? "accepted" : "rejected");
+            System.out.println(outputMsg);
+        });
+    }
+    
+    public static void testTransducer(Transducer transducer, List<String> inputs) {
+        inputs.stream().forEach(input -> {
+            Character[] symbols = transducer.transduce(input);
+            String output = "FAILED";
+            
+            if (symbols != null) {
+                StringBuilder builder = new StringBuilder();
+                for (Character symbol : symbols) {
+                    builder.append(symbol);
+                }
+                output = builder.toString();
+            }
+                    
+            String outputMsg = "Transduce '%s': %s".formatted(input, output);
             System.out.println(outputMsg);
         });
     }
@@ -118,6 +145,26 @@ public class Automata {
                 new DefaultStorageDevice(config2.symbol())
         );
         testAccepter(npda2, List.of("", "a", "b", "aabb", "aabbb", "aaabbbb"));
+    }
+    
+    public static void testDtm() {
+        System.out.println("Testing DTM1 - Language: 0^n.1^n.2^n, n >= 1");
+        TuringMachine dtm1 = new TuringMachine(
+                new InfiniteTape(BLANK), 
+                new DefaultReadWriteHead(),
+                new DefaultControlUnit(dtmConfig1())
+        );
+        testAccepter(dtm1, List.of("", "012", "00122", "012012", "001122"));
+        
+        System.out.println();
+        
+        System.out.println("Testing DTM2 - Transducer to compute the sum of 2 positive numbers in unary number system");
+        TuringMachine dtm2 = new TuringMachine(
+                new InfiniteTape(BLANK), 
+                new DefaultReadWriteHead(),
+                new DefaultControlUnit(dtmConfig2())
+        );
+        testTransducer(dtm2, List.of("", "111+11", "1+11111", "111++11", "11111+11111"));
     }
     
     /**
@@ -280,6 +327,62 @@ public class Automata {
         
         return new InitialStateAndSymbol(q0, 'Z');
     }
+    
+    /**
+     * Turing Machine for Language: 0^n.1^n.2^n, n >= 1
+     * @return The initial state
+     */
+    public static DtmState dtmConfig1() {
+        DtmState q0 = new DtmState();
+        DtmState q1 = new DtmState();
+        DtmState q2 = new DtmState();
+        DtmState q3 = new DtmState();
+        DtmState q4 = new DtmState();
+        DtmState q5 = new DtmState();
+        
+        q0.addTransition(q1, '0', 'A', Movements.right())
+                .addTransition(q4, 'B', 'B', Movements.right());
+        q1.addSelfLoop('B', 'B', Movements.right())
+                .addSelfLoop('0', '0', Movements.right())
+                .addTransition(q2, '1', 'B', Movements.right());
+        q2.addSelfLoop('C', 'C', Movements.right())
+                .addSelfLoop('1', '1', Movements.right())
+                .addTransition(q3, '2', 'C', Movements.left());
+        q3.addSelfLoop('1', '1', Movements.left())
+                .addSelfLoop('0', '0', Movements.left())
+                .addSelfLoop('B', 'B', Movements.left())
+                .addSelfLoop('C', 'C', Movements.left())
+                .addTransition(q0, 'A', 'A', Movements.right());
+        q4.addSelfLoop('B', 'B', Movements.right())
+                .addSelfLoop('C', 'C', Movements.right())
+                .addTransition(q5, BLANK, BLANK, Movements.right());
+        
+        return q0;
+    }
+    
+    /**
+     * Turing Machine to compute the sum of 2 positive numbers in unary number system
+     * @return The initial state
+     */
+    public static DtmState dtmConfig2() {
+        DtmState q0 = new DtmState() { @Override public String toString() { return "q0"; } };
+        DtmState q1 = new DtmState() { @Override public String toString() { return "q1"; } };
+        DtmState q2 = new DtmState() { @Override public String toString() { return "q2"; } };
+        DtmState q3 = new DtmState() { @Override public String toString() { return "q3"; } };
+        DtmState q4 = new DtmState() { @Override public String toString() { return "q4"; } };
+        DtmState HALT = new DtmState() { @Override public String toString() { return "HALT"; } };
+        
+        q0.addTransition(q1, '1', '1', Movements.right());
+        q1.addSelfLoop('1', '1', Movements.right())
+                .addTransition(q2, '+', '1', Movements.right());
+        q2.addSelfLoop('1', '1', Movements.right())
+                .addTransition(q3, BLANK, BLANK, Movements.left());
+        q3.addTransition(q4, '1', BLANK, Movements.right());
+        q4.addTransition(HALT, BLANK, BLANK, Movements.right());
+        
+        return q0;
+    }
 
     public record InitialStateAndSymbol<T extends State>(State state, char symbol) {}
+    public record InitialStateAndBlankSymbol<T extends State>(State state, Character symbol) {}
 }

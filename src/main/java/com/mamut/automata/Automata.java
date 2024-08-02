@@ -365,12 +365,12 @@ public class Automata {
      * @return The initial state
      */
     public static DtmState dtmConfig2() {
-        DtmState q0 = new DtmState() { @Override public String toString() { return "q0"; } };
-        DtmState q1 = new DtmState() { @Override public String toString() { return "q1"; } };
-        DtmState q2 = new DtmState() { @Override public String toString() { return "q2"; } };
-        DtmState q3 = new DtmState() { @Override public String toString() { return "q3"; } };
-        DtmState q4 = new DtmState() { @Override public String toString() { return "q4"; } };
-        DtmState HALT = new DtmState() { @Override public String toString() { return "HALT"; } };
+        DtmState q0 = new DtmState();
+        DtmState q1 = new DtmState();
+        DtmState q2 = new DtmState();
+        DtmState q3 = new DtmState();
+        DtmState q4 = new DtmState();
+        DtmState HALT = new DtmState();
         
         q0.addTransition(q1, '1', '1', Movements.right());
         q1.addSelfLoop('1', '1', Movements.right())

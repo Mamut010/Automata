@@ -7,3 +7,4 @@ Currently having:
 - Deterministic Pushdown Automaton
 - Nondeterministic Pushdown Automaton
 - Turing Machine
+- Nondeterministic Turing Machine

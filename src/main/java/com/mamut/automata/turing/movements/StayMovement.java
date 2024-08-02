@@ -15,11 +15,6 @@ public class StayMovement implements Movement {
     public int move(int offset) {
         return offset;
     }
-
-    @Override
-    public int revert(int offset) {
-        return offset;
-    }
     
     @Override
     public boolean equals(Object obj) {

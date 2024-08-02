@@ -19,6 +19,8 @@ import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
 import com.mamut.automata.turing.deterministic.DtmState;
 import com.mamut.automata.turing.deterministic.TuringMachine;
+import com.mamut.automata.turing.nondeterministic.NondeterministicTuringMachine;
+import com.mamut.automata.turing.nondeterministic.NtmState;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +41,8 @@ public class Automata {
         testNpda();
         System.out.println();
         testDtm();
+        System.out.println();
+        testNtm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -165,6 +169,19 @@ public class Automata {
                 new DefaultControlUnit(dtmConfig2())
         );
         testTransducer(dtm2, List.of("", "111+11", "1+11111", "111++11", "11111+11111"));
+    }
+    
+    public static void testNtm() {
+        System.out.println("Testing NTM1 - Language: a+");
+        NondeterministicTuringMachine ntm1 = new NondeterministicTuringMachine(
+                new InfiniteTape(BLANK), 
+                new DefaultReadWriteHead(),
+                new DefaultControlUnit(ntmConfig1())
+        );
+        testAccepter(ntm1, List.of("", "a", "aa", "aba", "aaaaaabaaaaaa", "aaaaaaaaaaaaaaaa"));
+        //testAccepter(ntm1, List.of("aa"));
+        
+        System.out.println();
     }
     
     /**
@@ -365,12 +382,12 @@ public class Automata {
      * @return The initial state
      */
     public static DtmState dtmConfig2() {
-        DtmState q0 = new DtmState() { @Override public String toString() { return "q0"; } };
-        DtmState q1 = new DtmState() { @Override public String toString() { return "q1"; } };
-        DtmState q2 = new DtmState() { @Override public String toString() { return "q2"; } };
-        DtmState q3 = new DtmState() { @Override public String toString() { return "q3"; } };
-        DtmState q4 = new DtmState() { @Override public String toString() { return "q4"; } };
-        DtmState HALT = new DtmState() { @Override public String toString() { return "HALT"; } };
+        DtmState q0 = new DtmState();
+        DtmState q1 = new DtmState();
+        DtmState q2 = new DtmState();
+        DtmState q3 = new DtmState();
+        DtmState q4 = new DtmState();
+        DtmState HALT = new DtmState();
         
         q0.addTransition(q1, '1', '1', Movements.right());
         q1.addSelfLoop('1', '1', Movements.right())
@@ -382,7 +399,22 @@ public class Automata {
         
         return q0;
     }
+    
+    /**
+     * Non-deterministic Turing Machine for Language: a+
+     * @return The initial state
+     */
+    public static NtmState ntmConfig1() {
+        NtmState q0 = new NtmState();
+        NtmState q1 = new NtmState();
+        NtmState HALT = new NtmState();
+        
+        q0.addSelfLoop('a', 'a', Movements.right())
+                .addTransition(q1, 'a', 'a', Movements.right());
+        q1.addTransition(HALT, BLANK, BLANK, Movements.stay());
+        
+        return q0;
+    }
 
     public record InitialStateAndSymbol<T extends State>(State state, char symbol) {}
-    public record InitialStateAndBlankSymbol<T extends State>(State state, Character symbol) {}
 }

@@ -9,10 +9,10 @@ import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.contracts.Transducer;
+import com.mamut.automata.turing.AbstractTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.Transition;
-import com.mamut.automata.util.Validators;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,17 +20,9 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class TuringMachine implements Accepter, Transducer {
-    private final Tape tape;
-    private final ReadWriteHead readWriteHead;
-    private final ControlUnit<DtmState> controlUnit;
-    
+public class TuringMachine extends AbstractTuringMachine<DtmState> implements Accepter, Transducer {
     public TuringMachine(Tape tape, ReadWriteHead readWriteHead, ControlUnit<DtmState> controlUnit) {
-        Validators.ensureNonNull(tape, readWriteHead, controlUnit);
-        
-        this.tape = tape;
-        this.readWriteHead = readWriteHead;
-        this.controlUnit = controlUnit;
+        super(tape, readWriteHead, controlUnit);
     }
     
     @Override
@@ -67,22 +59,5 @@ public class TuringMachine implements Accepter, Transducer {
         }
         
         return controlUnit.isAccepted();
-    }
-    
-    @Override
-    public Character[] transduce(String inputFile) {
-        if (test(inputFile)) {
-            return tape.getContent();
-        }
-        else {
-            return null;
-        }
-    }
-    
-    private Configuration<DtmState> getCurrentConfiguration() {
-        DtmState currentState = controlUnit.getInternalState();
-        int offset = readWriteHead.getOffset();
-        String tapeSnapshot = tape.snapshot();
-        return new Configuration(currentState, offset, tapeSnapshot);
     }
 }

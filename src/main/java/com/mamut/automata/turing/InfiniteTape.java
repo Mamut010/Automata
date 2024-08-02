@@ -109,7 +109,7 @@ public class InfiniteTape implements Tape {
         
         int newFrontSize = front.size();
         int newBackSize = back.size();
-        if (newFrontSize < oldFrontSize) {
+        if (newFrontSize != oldFrontSize) {
             offset -= oldFrontSize - newFrontSize;
             if (newFrontSize == 0) {
                 offset -= oldBackSize - newBackSize;

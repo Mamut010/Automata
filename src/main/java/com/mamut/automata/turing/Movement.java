@@ -10,5 +10,4 @@ package com.mamut.automata.turing;
  */
 public interface Movement {
     int move(int offset);
-    int revert(int offset);
 }

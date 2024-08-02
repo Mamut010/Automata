@@ -15,11 +15,6 @@ public class LeftMovement implements Movement {
     public int move(int offset) {
         return offset - 1;
     }
-
-    @Override
-    public int revert(int offset) {
-        return offset + 1;
-    }
     
     @Override
     public boolean equals(Object obj) {

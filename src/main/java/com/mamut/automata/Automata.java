@@ -179,9 +179,16 @@ public class Automata {
                 new DefaultControlUnit(ntmConfig1())
         );
         testAccepter(ntm1, List.of("", "a", "aa", "aba", "aaaaaabaaaaaa", "aaaaaaaaaaaaaaaa"));
-        //testAccepter(ntm1, List.of("aa"));
         
         System.out.println();
+        
+        System.out.println("Testing NTM2 - Transducer to invert a binary string");
+        NondeterministicTuringMachine ntm2 = new NondeterministicTuringMachine(
+                new InfiniteTape(BLANK), 
+                new DefaultReadWriteHead(),
+                new DefaultControlUnit(ntmConfig2())
+        );
+        testTransducer(ntm2, List.of("", "10", "1234", "00", "110011", "10101"));
     }
     
     /**
@@ -412,6 +419,24 @@ public class Automata {
         q0.addSelfLoop('a', 'a', Movements.right())
                 .addTransition(q1, 'a', 'a', Movements.right());
         q1.addTransition(HALT, BLANK, BLANK, Movements.stay());
+        
+        return q0;
+    }
+    
+    /**
+     * Non-deterministic Turing Machine to invert a binary string
+     * @return The initial state
+     */
+    public static NtmState ntmConfig2() {
+        NtmState q0 = new NtmState();
+        NtmState q1 = new NtmState();
+        NtmState ACCEPT = new NtmState();
+        
+        q0.addTransition(q1, '0', '0', Movements.stay())
+                .addTransition(q1, '1', '1', Movements.stay());
+        q1.addSelfLoop('0', '1', Movements.right())
+                .addSelfLoop('1', '0', Movements.right())
+                .addTransition(ACCEPT, BLANK, BLANK, Movements.right());
         
         return q0;
     }

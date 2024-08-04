@@ -15,21 +15,21 @@ import java.util.Map;
  */
 public final class Movements {
     private static final Map<String, Movement> cache = new HashMap<>();
-    private static final String LEFT_KEY = "L";
-    private static final String RIGHT_KEY = "R";
-    private static final String STAY_KEY = "S";
     
     private Movements() {}
     
     public static Movement left() {
+        final String LEFT_KEY = "L";
         return CollectionUtils.getOrPutNew(cache, LEFT_KEY, LeftMovement::new);
     }    
     
     public static Movement right() {
+        final String RIGHT_KEY = "R";
         return CollectionUtils.getOrPutNew(cache, RIGHT_KEY, RightMovement::new);
     }
     
     public static Movement stay() {
+        final String STAY_KEY = "S";
         return CollectionUtils.getOrPutNew(cache, STAY_KEY, StayMovement::new);
     }
 }

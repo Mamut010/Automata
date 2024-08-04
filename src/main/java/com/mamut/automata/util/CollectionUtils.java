@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,18 @@ public final class CollectionUtils {
         }
         return value;
     }
+    
+    public static <K, T> T getOrPutNew(Map<K, T> map, K key, Supplier<T> creator) {
+        T value;
+        if (!map.containsKey(key)) {
+            value = creator.get();
+            map.put(key, value);
+        }
+        else {
+            value = map.get(key);
+        }
+        return value;
+    } 
     
     public static <T> Set<T> union(Set<T>... sets) {
         Set<T> result = new HashSet<>();

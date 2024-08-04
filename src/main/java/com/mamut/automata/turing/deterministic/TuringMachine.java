@@ -4,11 +4,9 @@
  */
 package com.mamut.automata.turing.deterministic;
 
-import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.contracts.Tape;
-import com.mamut.automata.contracts.Transducer;
 import com.mamut.automata.turing.SingleTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
@@ -20,7 +18,7 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class TuringMachine extends SingleTapeTuringMachine<DtmState> implements Accepter, Transducer {
+public class TuringMachine extends SingleTapeTuringMachine<DtmState> {
     public TuringMachine(Tape tape, ReadWriteHead readWriteHead, ControlUnit<DtmState> controlUnit) {
         super(tape, readWriteHead, controlUnit);
     }

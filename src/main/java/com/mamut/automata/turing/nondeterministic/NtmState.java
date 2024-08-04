@@ -11,6 +11,7 @@ import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class NtmState implements State {
     public NtmState addTransition(NtmState state, Character symbol, Character replacingSymbol, Movement movement) {
         Validators.ensureNonNull(state, movement);
         
-        Set<Transition<NtmState>> possibleTransitions = CollectionUtils.getOrCreateSet(transitions, symbol);
+        Set<Transition<NtmState>> possibleTransitions = CollectionUtils.getOrPutNew(transitions, symbol, HashSet::new);
         Transition<NtmState> transition = new Transition<>(state, replacingSymbol, movement);
         possibleTransitions.add(transition);
         

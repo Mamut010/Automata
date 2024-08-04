@@ -11,6 +11,7 @@ import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,10 +84,10 @@ public class NpdaState implements State {
     private NpdaState addTransition(NpdaState state, char symbol, Object storageSymbol, StorageOperation operation) {
         Validators.ensureNonNull(state, storageSymbol, operation);
 
-        Map<Character, Set<Transition<NpdaState>>> storageSymbolBasedTransitions = CollectionUtils.getOrCreateMap(
-                transitions, storageSymbol);
-        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(storageSymbolBasedTransitions, 
-                symbol);
+        Map<Character, Set<Transition<NpdaState>>> storageSymbolBasedTransitions = CollectionUtils.getOrPutNew(
+                transitions, storageSymbol, HashMap::new);
+        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrPutNew(storageSymbolBasedTransitions, 
+                symbol, HashSet::new);
         
         possibleTransitions.add(new Transition(state, operation));
         return this;
@@ -97,7 +98,8 @@ public class NpdaState implements State {
             lambdaTransitions = new HashMap<>();
         }
         
-        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrCreateSet(lambdaTransitions, storageSymbol);
+        Set<Transition<NpdaState>> possibleTransitions = CollectionUtils.getOrPutNew(lambdaTransitions, 
+                storageSymbol, HashSet::new);
         possibleTransitions.add(new Transition(state, operation));
         return this;
     }

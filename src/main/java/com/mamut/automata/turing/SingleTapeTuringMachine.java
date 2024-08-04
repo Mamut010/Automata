@@ -17,12 +17,12 @@ import com.mamut.automata.util.Validators;
  * @author Pc
  * @param <T> The State type
  */
-public abstract class AbstractTuringMachine<T extends State> implements Accepter, Transducer {
+public abstract class SingleTapeTuringMachine<T extends State> implements Accepter, Transducer {
     protected final Tape tape;
     protected final ReadWriteHead readWriteHead;
     protected final ControlUnit<T> controlUnit;
     
-    public AbstractTuringMachine(Tape tape, ReadWriteHead readWriteHead, ControlUnit<T> controlUnit) {
+    public SingleTapeTuringMachine(Tape tape, ReadWriteHead readWriteHead, ControlUnit<T> controlUnit) {
         Validators.ensureNonNull(tape, readWriteHead, controlUnit);
         
         this.tape = tape;

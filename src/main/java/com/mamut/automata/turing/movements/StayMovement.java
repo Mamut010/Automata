@@ -35,6 +35,6 @@ public class StayMovement implements Movement {
     
     @Override
     public String toString() {
-        return "N";
+        return "S";
     }
 }

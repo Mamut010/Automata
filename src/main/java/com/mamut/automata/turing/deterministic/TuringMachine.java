@@ -7,7 +7,7 @@ package com.mamut.automata.turing.deterministic;
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.contracts.Tape;
-import com.mamut.automata.turing.SingleTapeTuringMachine;
+import com.mamut.automata.turing.AbstractSingleTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.Transition;
@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class TuringMachine extends SingleTapeTuringMachine<DtmState> {
+public class TuringMachine extends AbstractSingleTapeTuringMachine<DtmState> {
     public TuringMachine(Tape tape, ReadWriteHead readWriteHead, ControlUnit<DtmState> controlUnit) {
         super(tape, readWriteHead, controlUnit);
     }

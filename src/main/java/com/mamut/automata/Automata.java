@@ -169,6 +169,16 @@ public class Automata {
                 new DefaultControlUnit(dtmConfig2())
         );
         testTransducer(dtm2, List.of("", "111+11", "1+11111", "111++11", "11111+11111"));
+        
+        System.out.println();
+        
+        System.out.println("Testing DTM3 - Transducer to compute the parity of a binary number");
+        TuringMachine dtm3 = new TuringMachine(
+                new InfiniteTape(BLANK), 
+                new DefaultReadWriteHead(),
+                new DefaultControlUnit(dtmConfig3())
+        );
+        testTransducer(dtm3, List.of("", "001001", "101010", "1110110", "101"));
     }
     
     public static void testNtm() {
@@ -403,6 +413,28 @@ public class Automata {
                 .addTransition(q3, BLANK, BLANK, Movements.left());
         q3.addTransition(q4, '1', BLANK, Movements.right());
         q4.addTransition(HALT, BLANK, BLANK, Movements.right());
+        
+        return q0;
+    }
+    
+    /**
+     * Turing Machine to compute the parity of a binary number
+     * @return The initial state
+     */
+    public static DtmState dtmConfig3() {
+        DtmState q0 = new DtmState();
+        DtmState q1 = new DtmState();
+        DtmState q2 = new DtmState();
+        DtmState HALT = new DtmState();
+        
+        q0.addTransition(q1, '0', '0', Movements.right())
+                .addTransition(q2, '1', '1', Movements.right());
+        q1.addSelfLoop('0', '0', Movements.right())
+                .addTransition(q2, '1', '1', Movements.right())
+                .addTransition(HALT, BLANK, '0', Movements.right());
+        q2.addSelfLoop('0', '0', Movements.right())
+                .addTransition(q1, '1', '1', Movements.right())
+                .addTransition(HALT, BLANK, '1', Movements.right());
         
         return q0;
     }

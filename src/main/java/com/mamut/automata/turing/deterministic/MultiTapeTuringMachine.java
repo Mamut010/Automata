@@ -29,7 +29,7 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmS
         int tapeCount = tapeHeads.getTapeCount();
         
         MdtmState state = controlUnit.getInternalState();
-        List<Character> symbols = tapeHeads.getHeadSymbols();
+        List<Character> symbols = tapeHeads.getHeads().stream().map(ReadWriteHead::read).toList();
         List<Transition<MdtmState>> transitions = state.transitions(symbols);
         Set<List<Configuration<MdtmState>>> visited = new HashSet<>();
         
@@ -55,7 +55,7 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmS
             state = transitions.get(0).nextState();
             
             controlUnit.setInternalState(state);
-            symbols = tapeHeads.getHeadSymbols();
+            symbols = tapeHeads.getHeads().stream().map(ReadWriteHead::read).toList();
             transitions = state.transitions(symbols);
         }
         

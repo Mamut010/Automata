@@ -65,8 +65,8 @@ public final class TapeHeadCollection {
         return heads.get(index);
     }
     
-    public List<Character> getHeadSymbols() {
-        return heads.stream().map(ReadWriteHead::read).toList();
+    public List<ReadWriteHead> getHeads() {
+        return heads;
     }
     
     private int ensureValidIndex(int index) {

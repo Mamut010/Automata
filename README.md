@@ -8,3 +8,4 @@ Currently having:
 - Nondeterministic Pushdown Automaton
 - Turing Machine
 - Nondeterministic Turing Machine
+- Multi-tape Turing Machine

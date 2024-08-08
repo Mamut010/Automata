@@ -43,13 +43,7 @@ public class MdtmState implements MultiTapeState {
     }
     
     public MdtmState addTransition(MdtmState state, TuringTransitionConfig... configs) {
-        ensureValidTransition(state, configs);
-        if (tapeCount != -1) {
-            ensureCompatibleTapeCount(state, configs);
-        }
-        else {
-            tapeCount = configs.length;
-        }
+        guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
         List<Transition<MdtmState>> transitions = new ArrayList<>();
@@ -72,6 +66,16 @@ public class MdtmState implements MultiTapeState {
     
     public List<Transition<MdtmState>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
+    }
+    
+    private void guardTransition(MdtmState state, TuringTransitionConfig[] configs) {
+        ensureValidTransition(state, configs);
+        if (tapeCount != -1) {
+            ensureCompatibleTapeCount(state, configs);
+        }
+        else {
+            tapeCount = configs.length;
+        }
     }
     
     private void ensureValidTransition(MdtmState state, TuringTransitionConfig[] configs) {

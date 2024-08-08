@@ -46,6 +46,8 @@ public class Automata {
         testNtm();
         System.out.println();
         testMdtm();
+        System.out.println();
+        testMntm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -66,7 +68,7 @@ public class Automata {
                 for (Character symbol : symbols) {
                     builder.append(symbol);
                 }
-                output = builder.toString();
+                output = "'" + builder.toString() + "'";
             }
                     
             String outputMsg = "Transduce '%s': %s".formatted(input, output);
@@ -222,6 +224,16 @@ public class Automata {
                 new DefaultControlUnit(config2.state())
         );
         testAccepter(mdtm2, List.of("", "abc", "aabbcc", "aaccbb", "abccba", "aaaabbbbcccc", "1"));
+    }
+    
+    public static void testMntm() {
+        System.out.println("Testing MNTM1 - Transducer to detect word w in Language w.w, w is a binary string");
+        InitialStateAndTapeHeadCollection<MntmState> config1 = mntmConfig1();
+        MultiTapeNondeterministicTuringMachine mntm1 = new MultiTapeNondeterministicTuringMachine(
+                config1.collection(),
+                new DefaultControlUnit(config1.state())
+        );
+        testTransducer(mntm1, List.of("", "#", "0000", "0101", "11", "01010", "11001100"));
     }
     
     /**
@@ -497,7 +509,7 @@ public class Automata {
     }
     
     /**
-     * Multi-tape Turing Machine for Language: w.#.w, w is binary string
+     * Multi-tape Turing Machine for Language: w.#.w, w a is binary string
      * @return The initial state and tape head collection
      */
     public static InitialStateAndTapeHeadCollection<MdtmState> mdtmConfig1() {
@@ -614,6 +626,75 @@ public class Automata {
                 );
         
         return new InitialStateAndTapeHeadCollection<>(q4, makeDefaultTapeHeadCollection(q4.getTapeCount()));
+    }
+    
+    /**
+     * Multi-tape Turing Machine to detect word w in Language w.w, w is a binary string
+     * @return The initial state and tape head collection
+     */
+    public static InitialStateAndTapeHeadCollection<MntmState> mntmConfig1() {
+        MntmState q0 = new MntmState();
+        MntmState q1 = new MntmState();
+        MntmState q2 = new MntmState();
+        MntmState q3 = new MntmState();
+        
+        q0
+                .addSelfLoop(
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
+                )
+                .addTransition(q1,
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, '0', Movements.right())
+                )                
+                .addTransition(q1,
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.right())
+                );
+        
+        q1
+                .addSelfLoop(
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, '0', Movements.right())
+                )                
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.right())
+                )
+                .addTransition(q2,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left())
+                );
+        
+        q2
+                .addSelfLoop(
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig('0', '0', Movements.left()),
+                        new TuringTransitionConfig('0', '0', Movements.left())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig('1', '1', Movements.left()),
+                        new TuringTransitionConfig('1', '1', Movements.left())
+                )
+                .addTransition(q3,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
+                );
+        
+        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
     }
     
     private static TapeHeadCollection makeDefaultTapeHeadCollection(int tapeCount) {

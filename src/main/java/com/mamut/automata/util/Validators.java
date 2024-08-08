@@ -15,6 +15,10 @@ public final class Validators {
     private Validators() {}
     
     public static void ensureNonNull(Object... objects) {
+        ensureAllNonNull(objects);
+    }
+    
+    public static void ensureAllNonNull(Object[] objects) {
         if (Arrays.stream(objects).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException();
         }

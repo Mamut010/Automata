@@ -17,10 +17,11 @@ import com.mamut.automata.pushdown.nondeterministic.*;
 import com.mamut.automata.turing.DefaultReadWriteHead;
 import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
-import com.mamut.automata.turing.deterministic.DtmState;
-import com.mamut.automata.turing.deterministic.TuringMachine;
-import com.mamut.automata.turing.nondeterministic.NondeterministicTuringMachine;
-import com.mamut.automata.turing.nondeterministic.NtmState;
+import com.mamut.automata.turing.MultiTapeState;
+import com.mamut.automata.turing.TapeHeadCollection;
+import com.mamut.automata.turing.TuringTransitionConfig;
+import com.mamut.automata.turing.deterministic.*;
+import com.mamut.automata.turing.nondeterministic.*;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +44,8 @@ public class Automata {
         testDtm();
         System.out.println();
         testNtm();
+        System.out.println();
+        testMdtm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -199,6 +202,26 @@ public class Automata {
                 new DefaultControlUnit(ntmConfig2())
         );
         testTransducer(ntm2, List.of("", "10", "1234", "00", "110011", "10101"));
+    }
+    
+    public static void testMdtm() {
+        System.out.println("Testing MDTM1 - Language: w.#.w, w is a binary string");
+        InitialStateAndTapeHeadCollection<MdtmState> config1 = mdtmConfig1();
+        MultiTapeTuringMachine mdtm1 = new MultiTapeTuringMachine(
+                config1.collection(),
+                new DefaultControlUnit(config1.state())
+        );
+        testAccepter(mdtm1, List.of("", "#", "000", "00#00", "10#10", "10#100", "01011#01011"));
+        
+        System.out.println();
+        
+        System.out.println("Testing MDTM2 - Language: a^n.b^n.c^n, n >= 0");
+        InitialStateAndTapeHeadCollection<MdtmState> config2 = mdtmConfig2();
+        MultiTapeTuringMachine mdtm2 = new MultiTapeTuringMachine(
+                config2.collection(),
+                new DefaultControlUnit(config2.state())
+        );
+        testAccepter(mdtm2, List.of("", "abc", "aabbcc", "aaccbb", "abccba", "aaaabbbbcccc", "1"));
     }
     
     /**
@@ -472,6 +495,136 @@ public class Automata {
         
         return q0;
     }
+    
+    /**
+     * Multi-tape Turing Machine for Language: w.#.w, w is binary string
+     * @return The initial state and tape head collection
+     */
+    public static InitialStateAndTapeHeadCollection<MdtmState> mdtmConfig1() {
+        MdtmState q0 = new MdtmState();
+        MdtmState q1 = new MdtmState();
+        MdtmState q2 = new MdtmState();
+        MdtmState q3 = new MdtmState();
+        MdtmState q4 = new MdtmState();
+        
+        q0
+                .addTransition(q1,
+                        new TuringTransitionConfig('1',  '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK,  '1', Movements.right())
+                )
+                .addTransition(q1, 
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '0', Movements.right())
+                );
+        
+        q1
+                .addSelfLoop(
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '0', Movements.right())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.right())
+                )
+                .addTransition(q2, 
+                        new TuringTransitionConfig('#', '#', Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left())
+                );
+        
+        q2
+                .addSelfLoop(
+                        new TuringTransitionConfig('#', '#', Movements.stay()),
+                        new TuringTransitionConfig('1', '1', Movements.left())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig('#', '#', Movements.stay()),
+                        new TuringTransitionConfig('0', '0', Movements.left())
+                )
+                .addTransition(q3, 
+                        new TuringTransitionConfig('#', '#', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                );
+        
+        q3
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig('1', '1', Movements.right())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig('0', '0', Movements.right()),
+                        new TuringTransitionConfig('0', '0', Movements.right())
+                )
+                .addTransition(q4, 
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                );
+        
+        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+    }
+    
+    /**
+     * Multi-tape Turing Machine for Language: a^n.b^n.c^n, n >= 0
+     * @return The initial state and tape head collection
+     */
+    public static InitialStateAndTapeHeadCollection<MdtmState> mdtmConfig2() {
+        MdtmState q0 = new MdtmState();
+        MdtmState q1 = new MdtmState();
+        MdtmState q2 = new MdtmState();
+        MdtmState q3 = new MdtmState();
+        MdtmState q4 = new MdtmState();
+        
+        q4
+                .addTransition(q0, 
+                        new TuringTransitionConfig('a', 'a', Movements.right()),
+                        new TuringTransitionConfig(BLANK, 'a', Movements.right())
+                )
+                .addTransition(q3,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                );
+        
+        q0
+                .addSelfLoop(
+                        new TuringTransitionConfig('a', 'a', Movements.right()),
+                        new TuringTransitionConfig(BLANK, 'a', Movements.right())
+                )
+                .addTransition(q1, 
+                        new TuringTransitionConfig('b', 'b', Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left())
+                );
+        
+        q1
+                .addSelfLoop(
+                        new TuringTransitionConfig('b', 'b', Movements.right()),
+                        new TuringTransitionConfig('a', 'a', Movements.left())
+                )
+                .addTransition(q2, 
+                        new TuringTransitionConfig('c', 'c', Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                );
+        
+        q2
+                .addSelfLoop(
+                        new TuringTransitionConfig('c', 'c', Movements.right()),
+                        new TuringTransitionConfig('a', 'a', Movements.right())
+                )
+                .addTransition(q3, 
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                );
+        
+        return new InitialStateAndTapeHeadCollection<>(q4, makeDefaultTapeHeadCollection(q4.getTapeCount()));
+    }
+    
+    private static TapeHeadCollection makeDefaultTapeHeadCollection(int tapeCount) {
+        TapeHeadCollection tapeHeads = new TapeHeadCollection();
+        for (int i = 0; i < tapeCount; i++) {
+            tapeHeads.add(new InfiniteTape(BLANK), new DefaultReadWriteHead());
+        }
+        return tapeHeads;
+    }
 
-    public record InitialStateAndSymbol<T extends State>(State state, char symbol) {}
+    public record InitialStateAndSymbol<T extends State>(T state, char symbol) {}
+    
+    public record InitialStateAndTapeHeadCollection<T extends MultiTapeState>(T state, TapeHeadCollection collection) {}
 }

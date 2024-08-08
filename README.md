@@ -9,3 +9,4 @@ Currently having:
 - Turing Machine
 - Nondeterministic Turing Machine
 - Multi-tape Turing Machine
+- Multi-tape Deterministic Turing Machine

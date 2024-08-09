@@ -6,11 +6,13 @@ package com.mamut.automata.util;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -46,5 +48,11 @@ public final class CollectionUtils {
             result.addAll(set);
         }
         return result;
+    }
+    
+    public static <A, B> Stream<Pair<A, B>> zip(List<A> list1, List<B> list2) {
+        return IntStream
+                .range(0, Math.min(list1.size(), list2.size()))
+                .mapToObj(i -> new Pair<>(list1.get(i), list2.get(i)));
     }
 }

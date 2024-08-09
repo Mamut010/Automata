@@ -14,10 +14,13 @@ import com.mamut.automata.pushdown.DefaultStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import com.mamut.automata.pushdown.nondeterministic.*;
+import com.mamut.automata.turing.DefaultMultiTrackReadWriteHead;
 import com.mamut.automata.turing.DefaultReadWriteHead;
+import com.mamut.automata.turing.DefaultTapeOrderedCollection;
 import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
 import com.mamut.automata.turing.MultiTapeState;
+import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
 import com.mamut.automata.turing.TapeHeadCollection;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.deterministic.*;
@@ -48,6 +51,10 @@ public class Automata {
         testMdtm();
         System.out.println();
         testMntm();
+        System.out.println();
+        testMtdtm();
+        System.out.println();
+        testMtntm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -234,6 +241,47 @@ public class Automata {
                 new DefaultControlUnit(config1.state())
         );
         testTransducer(mntm1, List.of("", "#", "0000", "0101", "11", "01010", "11001100"));
+        
+        System.out.println();
+        
+        System.out.println("Testing MNTM2 - Simulating a Multi-track Turing Machine Transducer to double x --> 2x, "
+                + "x is a positive number in unary number system");
+        InitialStateAndTapeHeadCollection<MntmState> config2 = mntmConfig2();
+        MultiTapeNondeterministicTuringMachine mntm2 = new MultiTapeNondeterministicTuringMachine(
+                config2.collection(),
+                new DefaultControlUnit(config2.state())
+        );
+        testTransducer(mntm2, List.of("", "#", "0", "1", "11", "111", "11111"));
+    }
+    
+    public static void testMtdtm() {
+        System.out.println("Testing MTDTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
+        MtdtmState initialState = mtdtmConfig1();
+        DefaultTapeOrderedCollection tapes = new DefaultTapeOrderedCollection();
+        for (int i = 0; i < initialState.getTapeCount(); i++) {
+            tapes.add(new InfiniteTape(BLANK));
+        }
+        MultiTrackTuringMachine mtdtm1 = new MultiTrackTuringMachine(
+                tapes,
+                new DefaultMultiTrackReadWriteHead(),
+                new DefaultControlUnit(initialState)
+        );
+        testTransducer(mtdtm1, List.of("", "#", "0", "1", "11", "111", "11111"));
+    }
+    
+    public static void testMtntm() {
+        System.out.println("Testing MTNTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
+        MtntmState initialState = mtntmConfig1();
+        DefaultTapeOrderedCollection tapes = new DefaultTapeOrderedCollection();
+        for (int i = 0; i < initialState.getTapeCount(); i++) {
+            tapes.add(new InfiniteTape(BLANK));
+        }
+        MultiTrackNondeterministicTuringMachine mtntm1 = new MultiTrackNondeterministicTuringMachine(
+                tapes,
+                new DefaultMultiTrackReadWriteHead(),
+                new DefaultControlUnit(initialState)
+        );
+        testTransducer(mtntm1, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
     
     /**
@@ -695,6 +743,182 @@ public class Automata {
                 );
         
         return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+    }
+    
+    /**
+     * Multi-tape Turing Machine simulating Multi-track Turing Machine to double x --> 2x, x is a positive number in unary number system
+     * @return The initial state and tape head collection
+     */
+    public static InitialStateAndTapeHeadCollection<MntmState> mntmConfig2() {
+        MntmState q0 = new MntmState();
+        MntmState q1 = new MntmState();
+        MntmState q2 = new MntmState();
+        MntmState q3 = new MntmState();
+        
+        q0
+                .addTransition(q3,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig('1', '1', Movements.stay())
+                )
+                .addTransition(q3,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
+                )               
+                .addTransition(q1,
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.right())
+                );
+        
+        q1
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right())
+                )                
+                .addSelfLoop(
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.right()),
+                        new TuringTransitionConfig('1', '1', Movements.right())
+                )
+                .addTransition(q2,
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left()),
+                        new TuringTransitionConfig(BLANK, '1', Movements.left())
+                );
+        
+        q2
+                .addSelfLoop(
+                        new TuringTransitionConfig('1', '1', Movements.left()),
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left())
+                )
+                .addSelfLoop(
+                        new TuringTransitionConfig(BLANK, BLANK, Movements.left()),
+                        new TuringTransitionConfig('1', '1', Movements.left())
+                )
+                .addTransition(q0,
+                        new TuringTransitionConfig('1', '1', Movements.right()),
+                        new TuringTransitionConfig('1', '1', Movements.right())
+                );
+        
+        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+    }
+    
+    private static MtdtmState mtdtmConfig1() {
+        MtdtmState q0 = new MtdtmState();
+        MtdtmState q1 = new MtdtmState();
+        MtdtmState q2 = new MtdtmState();
+        MtdtmState HALT = new MtdtmState();
+        
+        q0
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addTransition(q1, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q1
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q2, Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q2                
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q0, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                );
+        
+        return q0;
+    }
+    
+    private static MtntmState mtntmConfig1() {
+        MtntmState q0 = new MtntmState();
+        MtntmState q1 = new MtntmState();
+        MtntmState q2 = new MtntmState();
+        MtntmState HALT = new MtntmState();
+        
+        q0
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addTransition(q1, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q1
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q2, Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q2                
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q0, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                );
+               
+        // Additional nondeterministic paths
+        q0
+                .addTransition(q1, Movements.left(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                );
+        
+        return q0;
     }
     
     private static TapeHeadCollection makeDefaultTapeHeadCollection(int tapeCount) {

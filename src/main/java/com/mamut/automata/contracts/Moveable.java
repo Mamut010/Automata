@@ -8,8 +8,7 @@ package com.mamut.automata.contracts;
  *
  * @author Pc
  */
-public interface ReadWriteHead extends Moveable {
-    void initialize(Tape tape);
-    Character read();
-    void write(Character symbol);
+public interface Moveable {
+    int getOffset();
+    void setOffset(int offset);
 }

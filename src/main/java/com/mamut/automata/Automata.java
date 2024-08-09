@@ -53,6 +53,8 @@ public class Automata {
         testMntm();
         System.out.println();
         testMtdtm();
+        System.out.println();
+        testMtntm();
     }
     
     public static void testAccepter(Accepter accepter, List<String> inputs) {
@@ -265,6 +267,21 @@ public class Automata {
                 new DefaultControlUnit(initialState)
         );
         testTransducer(mtdtm1, List.of("", "#", "0", "1", "11", "111", "11111"));
+    }
+    
+    public static void testMtntm() {
+        System.out.println("Testing MTNTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
+        MtntmState initialState = mtntmConfig1();
+        DefaultTapeOrderedCollection tapes = new DefaultTapeOrderedCollection();
+        for (int i = 0; i < initialState.getTapeCount(); i++) {
+            tapes.add(new InfiniteTape(BLANK));
+        }
+        MultiTrackNondeterministicTuringMachine mtntm1 = new MultiTrackNondeterministicTuringMachine(
+                tapes,
+                new DefaultMultiTrackReadWriteHead(),
+                new DefaultControlUnit(initialState)
+        );
+        testTransducer(mtntm1, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
     
     /**
@@ -829,6 +846,76 @@ public class Automata {
                 .addTransition(q0, Movements.right(),
                         new MultiTrackTuringTransitionConfig('1', '1'),
                         new MultiTrackTuringTransitionConfig('1', '1')
+                );
+        
+        return q0;
+    }
+    
+    private static MtntmState mtntmConfig1() {
+        MtntmState q0 = new MtntmState();
+        MtntmState q1 = new MtntmState();
+        MtntmState q2 = new MtntmState();
+        MtntmState HALT = new MtntmState();
+        
+        q0
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(HALT, Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addTransition(q1, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q1
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q2, Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                );
+        
+        q2                
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addTransition(q0, Movements.right(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                );
+               
+        // Additional nondeterministic paths
+        q0
+                .addTransition(q1, Movements.left(),
+                        new MultiTrackTuringTransitionConfig('1', '1'),
+                        new MultiTrackTuringTransitionConfig(BLANK, '1')
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addSelfLoop(Movements.left(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig('1', '1')
+                )
+                .addSelfLoop(Movements.right(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
                 );
         
         return q0;

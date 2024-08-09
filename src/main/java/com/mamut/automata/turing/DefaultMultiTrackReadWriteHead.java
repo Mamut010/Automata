@@ -49,6 +49,10 @@ public class DefaultMultiTrackReadWriteHead implements MultiTrackReadWriteHead {
 
     @Override
     public void setOffset(int offset) {
+        if (offset == sentryOffset) {
+            return;
+        }
+        
         int change = offset - sentryOffset;
         sentryOffset = offset;
         

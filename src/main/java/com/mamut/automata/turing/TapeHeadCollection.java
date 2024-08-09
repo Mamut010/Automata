@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author Pc
  */
-public final class TapeHeadCollection {
+public class TapeHeadCollection {
     private final List<Tape> tapes;
     private final List<ReadWriteHead> heads;
     

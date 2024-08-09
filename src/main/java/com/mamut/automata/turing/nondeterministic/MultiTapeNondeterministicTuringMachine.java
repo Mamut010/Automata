@@ -9,6 +9,7 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
+import com.mamut.automata.turing.MultiTapeNondeterministicState;
 import com.mamut.automata.turing.TapeHeadCollection;
 import com.mamut.automata.turing.Transition;
 import java.util.HashSet;
@@ -19,8 +20,8 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTuringMachine<MntmState> {
-    public MultiTapeNondeterministicTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MntmState> controlUnit) {
+public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTuringMachine<MultiTapeNondeterministicState> {
+    public MultiTapeNondeterministicTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MultiTapeNondeterministicState> controlUnit) {
         super(tapeHeads, controlUnit);
     }
 
@@ -29,18 +30,18 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
         return testImpl(new HashSet<>());
     }
     
-    private boolean testImpl(Set<List<Configuration<MntmState>>> visited) {
-        List<Configuration<MntmState>> configs = getCurrentConfigurations();
+    private boolean testImpl(Set<List<Configuration<MultiTapeNondeterministicState>>> visited) {
+        List<Configuration<MultiTapeNondeterministicState>> configs = getCurrentConfigurations();
         if (!visited.add(configs)) {
             return false;
         }
         
-        MntmState state = controlUnit.getInternalState();
+        MultiTapeNondeterministicState state = controlUnit.getInternalState();
         List<Character> symbols = tapeHeads.getHeads().stream().map(ReadWriteHead::read).toList();
         List<Integer> offsets = tapeHeads.getHeads().stream().map(ReadWriteHead::getOffset).toList();
-        Set<List<Transition<MntmState>>> possibleTransitions = state.transitions(symbols);
+        Set<List<Transition<MultiTapeNondeterministicState>>> possibleTransitions = state.transitions(symbols);
         
-        for (List<Transition<MntmState>> transitions : possibleTransitions) {
+        for (List<Transition<MultiTapeNondeterministicState>> transitions : possibleTransitions) {
             if (testTransitions(visited, transitions)) {
                 return true;
             }
@@ -50,10 +51,13 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
         return controlUnit.isAccepted();
     }
     
-    private boolean testTransitions(Set<List<Configuration<MntmState>>> visited, List<Transition<MntmState>> transitions) {
+    private boolean testTransitions(
+            Set<List<Configuration<MultiTapeNondeterministicState>>> visited,
+            List<Transition<MultiTapeNondeterministicState>> transitions
+    ) {
         for (int i = 0; i < tapeHeads.getTapeCount(); i++) {
             ReadWriteHead head = tapeHeads.getHead(i);
-            Transition<MntmState> transition = transitions.get(i);
+            Transition<MultiTapeNondeterministicState> transition = transitions.get(i);
             Character replacingSymbol = transition.replacingSymbol();
             Movement movement = transition.movement();
 
@@ -64,13 +68,17 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
             head.setOffset(nextOffset);
         }
         
-        MntmState state = transitions.get(0).nextState();
+        MultiTapeNondeterministicState state = transitions.get(0).nextState();
         controlUnit.setInternalState(state);
         
         return testImpl(visited);
     }
     
-    private void revertChanges(List<Character> previousSymbols, List<Integer> previousOffsets, MntmState previousState) {
+    private void revertChanges(
+            List<Character> previousSymbols,
+            List<Integer> previousOffsets,
+            MultiTapeNondeterministicState previousState
+    ) {
         controlUnit.setInternalState(previousState);
         
         for (int i = 0; i < tapeHeads.getTapeCount(); i++) {

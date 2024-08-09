@@ -9,6 +9,7 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
+import com.mamut.automata.turing.MultiTapeDeterministicState;
 import com.mamut.automata.turing.TapeHeadCollection;
 import com.mamut.automata.turing.Transition;
 import java.util.HashSet;
@@ -19,8 +20,8 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmState> {
-    public MultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MdtmState> controlUnit) {
+public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MultiTapeDeterministicState> {
+    public MultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MultiTapeDeterministicState> controlUnit) {
         super(tapeHeads, controlUnit);
     }
     
@@ -28,20 +29,20 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmS
     public boolean testImpl() {
         int tapeCount = tapeHeads.getTapeCount();
         
-        MdtmState state = controlUnit.getInternalState();
+        MultiTapeDeterministicState state = controlUnit.getInternalState();
         List<Character> symbols = tapeHeads.getHeads().stream().map(ReadWriteHead::read).toList();
-        List<Transition<MdtmState>> transitions = state.transitions(symbols);
-        Set<List<Configuration<MdtmState>>> visited = new HashSet<>();
+        List<Transition<MultiTapeDeterministicState>> transitions = state.transitions(symbols);
+        Set<List<Configuration<MultiTapeDeterministicState>>> visited = new HashSet<>();
         
         while (!transitions.isEmpty()) {
-            List<Configuration<MdtmState>> configs = getCurrentConfigurations();
+            List<Configuration<MultiTapeDeterministicState>> configs = getCurrentConfigurations();
             if (!visited.add(configs)) {
                 return false;
             }
             
             for (int i = 0; i < tapeCount; i++) {
                 ReadWriteHead head = tapeHeads.getHead(i);
-                Transition<MdtmState> transition = transitions.get(i);
+                Transition<MultiTapeDeterministicState> transition = transitions.get(i);
                 Character replacingSymbol = transition.replacingSymbol();
                 Movement movement = transition.movement();
                 

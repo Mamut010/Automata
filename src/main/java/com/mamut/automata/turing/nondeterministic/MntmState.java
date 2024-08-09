@@ -5,7 +5,7 @@
 package com.mamut.automata.turing.nondeterministic;
 
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.MultiTapeState;
+import com.mamut.automata.turing.MultiTapeNondeterministicState;
 import com.mamut.automata.turing.Transition;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.util.CollectionUtils;
@@ -22,7 +22,7 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class MntmState implements MultiTapeState {
+public class MntmState implements MultiTapeNondeterministicState {
     private final Map<List<Character>, Set<List<Transition<MntmState>>>> transitionMap;
     private int tapeCount;
     
@@ -68,7 +68,8 @@ public class MntmState implements MultiTapeState {
         return this;
     }
     
-    public Set<List<Transition<MntmState>>> transitions(List<Character> symbols) {
+    @Override
+    public Set<List<Transition<MultiTapeNondeterministicState>>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_SET);
     }
     

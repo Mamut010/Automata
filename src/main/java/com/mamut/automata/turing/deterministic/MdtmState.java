@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author Pc
  */
-public class MdtmState implements MultiTapeDeterministicState {
+public class MdtmState implements MultiTapeDeterministicState<MdtmState> {
     private final Map<List<Character>, List<Transition<MdtmState>>> transitionMap;
     private int tapeCount;
     
@@ -65,7 +65,7 @@ public class MdtmState implements MultiTapeDeterministicState {
     }
     
     @Override
-    public List<Transition<MultiTapeDeterministicState>> transitions(List<Character> symbols) {
+    public List<Transition<MdtmState>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
     }
     

@@ -9,7 +9,8 @@ import java.util.List;
 /**
  *
  * @author Pc
+ * @param <T> The implementing State
  */
-public interface MultiTapeDeterministicState extends MultiTapeState {
-    List<Transition<MultiTapeDeterministicState>> transitions(List<Character> symbols);
+public interface MultiTapeDeterministicState<T extends MultiTapeDeterministicState> extends MultiTapeState {
+    List<Transition<T>> transitions(List<Character> symbols);
 }

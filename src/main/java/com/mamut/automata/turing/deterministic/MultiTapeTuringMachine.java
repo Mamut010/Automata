@@ -19,9 +19,10 @@ import java.util.Set;
 /**
  *
  * @author Pc
+ * @param <T> The State type
  */
-public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MultiTapeDeterministicState> {
-    public MultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MultiTapeDeterministicState> controlUnit) {
+public class MultiTapeTuringMachine<T extends MultiTapeDeterministicState> extends AbstractMultiTapeTuringMachine<T> {
+    public MultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
         super(tapeHeads, controlUnit);
     }
     
@@ -29,20 +30,20 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<Multi
     public boolean testImpl() {
         int tapeCount = tapeHeads.getTapeCount();
         
-        MultiTapeDeterministicState state = controlUnit.getInternalState();
+        T state = controlUnit.getInternalState();
         List<Character> symbols = tapeHeads.getHeads().stream().map(ReadWriteHead::read).toList();
-        List<Transition<MultiTapeDeterministicState>> transitions = state.transitions(symbols);
-        Set<List<Configuration<MultiTapeDeterministicState>>> visited = new HashSet<>();
+        List<Transition<T>> transitions = state.transitions(symbols);
+        Set<List<Configuration<T>>> visited = new HashSet<>();
         
         while (!transitions.isEmpty()) {
-            List<Configuration<MultiTapeDeterministicState>> configs = getCurrentConfigurations();
+            List<Configuration<T>> configs = getCurrentConfigurations();
             if (!visited.add(configs)) {
                 return false;
             }
             
             for (int i = 0; i < tapeCount; i++) {
                 ReadWriteHead head = tapeHeads.getHead(i);
-                Transition<MultiTapeDeterministicState> transition = transitions.get(i);
+                Transition<T> transition = transitions.get(i);
                 Character replacingSymbol = transition.replacingSymbol();
                 Movement movement = transition.movement();
                 

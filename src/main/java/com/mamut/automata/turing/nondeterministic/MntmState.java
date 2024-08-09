@@ -22,7 +22,7 @@ import java.util.Set;
  *
  * @author Pc
  */
-public class MntmState implements MultiTapeNondeterministicState {
+public class MntmState implements MultiTapeNondeterministicState<MntmState> {
     private final Map<List<Character>, Set<List<Transition<MntmState>>>> transitionMap;
     private int tapeCount;
     
@@ -69,7 +69,7 @@ public class MntmState implements MultiTapeNondeterministicState {
     }
     
     @Override
-    public Set<List<Transition<MultiTapeNondeterministicState>>> transitions(List<Character> symbols) {
+    public Set<List<Transition<MntmState>>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_SET);
     }
     

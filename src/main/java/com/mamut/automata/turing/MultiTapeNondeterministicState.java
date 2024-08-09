@@ -10,7 +10,8 @@ import java.util.Set;
 /**
  *
  * @author Pc
+ * @param <T> The implementing State
  */
-public interface MultiTapeNondeterministicState extends MultiTapeState {
-    Set<List<Transition<MultiTapeNondeterministicState>>> transitions(List<Character> symbols);
+public interface MultiTapeNondeterministicState<T extends MultiTapeNondeterministicState> extends MultiTapeState {
+    Set<List<Transition<T>>> transitions(List<Character> symbols);
 }

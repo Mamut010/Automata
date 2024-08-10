@@ -4,8 +4,6 @@
  */
 package com.mamut.automata.contracts;
 
-import com.mamut.automata.contracts.ReadWriteHead;
-
 /**
  *
  * @author Pc

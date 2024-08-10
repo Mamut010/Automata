@@ -6,7 +6,7 @@ package com.mamut.automata.turing.deterministic;
 
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
-import com.mamut.automata.turing.InternalMultiTrackCollection;
+import com.mamut.automata.turing.MultiTrackCollection;
 import com.mamut.automata.contracts.MultiTapeCollection;
 import java.util.function.Supplier;
 
@@ -20,6 +20,6 @@ public class MultiTrackTuringMachine extends MultiTapeTuringMachine<MultiTrackDt
             Supplier<ReadWriteHead> headCreator, 
             ControlUnit<MultiTrackDtmState> controlUnit
     ) {
-        super(new InternalMultiTrackCollection(tapes, headCreator).toMultiTapeHeadCollection(), controlUnit);
+        super(new MultiTrackCollection(tapes, headCreator), controlUnit);
     }
 }

@@ -5,11 +5,12 @@
 package com.mamut.automata.turing.deterministic;
 
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.MultiTapeState;
-import com.mamut.automata.turing.MultiTrackTransition;
+import com.mamut.automata.turing.MultiTapeDeterministicState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
+import com.mamut.automata.turing.Transition;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +19,18 @@ import java.util.Map;
  *
  * @author Pc
  */
-public class MtdtmState implements MultiTapeState {
-    private final Map<List<Character>, MultiTrackTransition<MtdtmState>> transitions;
+public class MultiTrackDtmState implements MultiTapeDeterministicState<MultiTrackDtmState> {
+    private final Map<List<Character>, List<Transition<MultiTrackDtmState>>> transitionMap;
     private int tapeCount;
     
-    public MtdtmState() {
+    public MultiTrackDtmState() {
         tapeCount = -1;
-        transitions = new HashMap<>();
+        transitionMap = new HashMap<>();
     }
     
     @Override
     public boolean isFinal() {
-        return transitions.isEmpty();
+        return transitionMap.isEmpty();
     }
     
     @Override
@@ -37,35 +38,37 @@ public class MtdtmState implements MultiTapeState {
         return tapeCount != -1 ? tapeCount : 0;
     }
     
-    public MtdtmState addSelfLoop(Movement movement, MultiTrackTuringTransitionConfig... configs) {
+    public MultiTrackDtmState addSelfLoop(Movement movement, MultiTrackTuringTransitionConfig... configs) {
         return addTransition(this, movement, configs);
     }
     
-    public MtdtmState addTransition(MtdtmState state, Movement movement, MultiTrackTuringTransitionConfig... configs) {
+    public MultiTrackDtmState addTransition(MultiTrackDtmState state, Movement movement, MultiTrackTuringTransitionConfig... configs) {
         guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
-        List<Character> replacingSymbols = new ArrayList<>();
+        List<Transition<MultiTrackDtmState>> transitions = new ArrayList<>();
         for (int i = 0; i < tapeCount; i++) {
             MultiTrackTuringTransitionConfig config = configs[i];
             Character symbol = config.symbol();
             Character replacingSymbol = config.replacingSymbol();
             
+            Transition<MultiTrackDtmState> transition = new Transition<>(state, replacingSymbol, movement);
+            
             symbols.add(symbol);
-            replacingSymbols.add(replacingSymbol);
+            transitions.add(transition);
         }
         
-        MultiTrackTransition<MtdtmState> transition = new MultiTrackTransition<>(state, movement, replacingSymbols);
-        transitions.put(symbols, transition);
+        transitionMap.put(symbols, transitions);
         
         return this;
     }
     
-    public MultiTrackTransition<MtdtmState> transition(List<Character> symbols) {
-        return transitions.getOrDefault(symbols, null);
+    @Override
+    public List<Transition<MultiTrackDtmState>> transitions(List<Character> symbols) {
+        return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
     }
     
-    private void guardTransition(MtdtmState state, MultiTrackTuringTransitionConfig[] configs) {
+    private void guardTransition(MultiTrackDtmState state, MultiTrackTuringTransitionConfig[] configs) {
         ensureValidTransition(state, configs);
         if (tapeCount != -1) {
             ensureCompatibleTapeCount(state, configs);
@@ -75,7 +78,7 @@ public class MtdtmState implements MultiTapeState {
         }
     }
     
-    private void ensureValidTransition(MtdtmState state, MultiTrackTuringTransitionConfig[] configs) {
+    private void ensureValidTransition(MultiTrackDtmState state, MultiTrackTuringTransitionConfig[] configs) {
         Validators.ensureNonNull(state, configs);
         Validators.ensureAllNonNull(configs);
         if (configs.length == 0) {
@@ -83,7 +86,7 @@ public class MtdtmState implements MultiTapeState {
         }
     }
     
-    private void ensureCompatibleTapeCount(MtdtmState state, MultiTrackTuringTransitionConfig[] configs) {
+    private void ensureCompatibleTapeCount(MultiTrackDtmState state, MultiTrackTuringTransitionConfig[] configs) {
         if (configs.length != tapeCount) {
             throw new IllegalArgumentException("Incompatible number of tracks and number of track configurations");
         }

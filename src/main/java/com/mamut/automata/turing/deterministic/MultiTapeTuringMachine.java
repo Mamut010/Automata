@@ -9,7 +9,8 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.TapeHeadCollection;
+import com.mamut.automata.turing.MultiTapeDeterministicState;
+import com.mamut.automata.turing.MultiTapeHeadCollection;
 import com.mamut.automata.turing.Transition;
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +19,10 @@ import java.util.Set;
 /**
  *
  * @author Pc
+ * @param <T> The State type
  */
-public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmState> {
-    public MultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MdtmState> controlUnit) {
+public class MultiTapeTuringMachine<T extends MultiTapeDeterministicState> extends AbstractMultiTapeTuringMachine<T> {
+    public MultiTapeTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
         super(tapeHeads, controlUnit);
     }
     
@@ -28,20 +30,20 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmS
     public boolean testImpl() {
         int tapeCount = tapeHeads.getTapeCount();
         
-        MdtmState state = controlUnit.getInternalState();
-        List<Character> symbols = tapeHeads.getHeadStream().map(ReadWriteHead::read).toList();
-        List<Transition<MdtmState>> transitions = state.transitions(symbols);
-        Set<List<Configuration<MdtmState>>> visited = new HashSet<>();
+        T state = controlUnit.getInternalState();
+        List<Character> symbols = getHeadStream().map(ReadWriteHead::read).toList();
+        List<Transition<T>> transitions = state.transitions(symbols);
+        Set<List<Configuration<T>>> visited = new HashSet<>();
         
         while (!transitions.isEmpty()) {
-            List<Configuration<MdtmState>> configs = getCurrentConfigurations();
+            List<Configuration<T>> configs = getCurrentConfigurations();
             if (!visited.add(configs)) {
                 return false;
             }
             
             for (int i = 0; i < tapeCount; i++) {
                 ReadWriteHead head = tapeHeads.getHead(i);
-                Transition<MdtmState> transition = transitions.get(i);
+                Transition<T> transition = transitions.get(i);
                 Character replacingSymbol = transition.replacingSymbol();
                 Movement movement = transition.movement();
                 
@@ -55,7 +57,7 @@ public class MultiTapeTuringMachine extends AbstractMultiTapeTuringMachine<MdtmS
             state = transitions.get(0).nextState();
             
             controlUnit.setInternalState(state);
-            symbols = tapeHeads.getHeadStream().map(ReadWriteHead::read).toList();
+            symbols = getHeadStream().map(ReadWriteHead::read).toList();
             transitions = state.transitions(symbols);
         }
         

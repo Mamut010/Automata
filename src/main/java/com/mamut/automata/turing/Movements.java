@@ -5,7 +5,6 @@
 package com.mamut.automata.turing;
 
 import com.mamut.automata.turing.movements.*;
-import com.mamut.automata.util.CollectionUtils;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;

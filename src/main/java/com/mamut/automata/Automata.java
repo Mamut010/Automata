@@ -5,9 +5,7 @@
 package com.mamut.automata;
 
 import com.mamut.automata.core.*;
-import com.mamut.automata.contracts.Accepter;
-import com.mamut.automata.contracts.State;
-import com.mamut.automata.contracts.Transducer;
+import com.mamut.automata.contracts.*;
 import com.mamut.automata.finite.deterministic.*;
 import com.mamut.automata.finite.nondeterministic.*;
 import com.mamut.automata.pushdown.DefaultStorageDevice;
@@ -18,10 +16,9 @@ import com.mamut.automata.turing.DefaultReadWriteHead;
 import com.mamut.automata.turing.TapeOrderedCollection;
 import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
-import com.mamut.automata.turing.MultiTapeState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
 import com.mamut.automata.turing.MultiTapeHeadPairCollection;
-import com.mamut.automata.turing.MultiTapeHeadCollection;
+import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.deterministic.*;
 import com.mamut.automata.turing.nondeterministic.*;

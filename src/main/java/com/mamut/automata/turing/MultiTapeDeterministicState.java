@@ -4,6 +4,7 @@
  */
 package com.mamut.automata.turing;
 
+import com.mamut.automata.contracts.MultiTapeState;
 import java.util.List;
 
 /**
@@ -12,5 +13,5 @@ import java.util.List;
  * @param <T> The implementing State type
  */
 public interface MultiTapeDeterministicState<T extends MultiTapeState> extends MultiTapeState {
-    List<Transition<T>> transitions(List<Character> symbols);
+    List<TuringTransition<T>> transitions(List<Character> symbols);
 }

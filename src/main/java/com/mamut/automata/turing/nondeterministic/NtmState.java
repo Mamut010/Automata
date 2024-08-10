@@ -6,7 +6,7 @@ package com.mamut.automata.turing.nondeterministic;
 
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.Collections;
@@ -20,7 +20,7 @@ import java.util.Set;
  * @author Pc
  */
 public class NtmState implements State {
-    private final Map<Character, Set<Transition<NtmState>>> transitions;
+    private final Map<Character, Set<TuringTransition<NtmState>>> transitions;
     
     public NtmState() {
         transitions = new HashMap<>();
@@ -38,14 +38,14 @@ public class NtmState implements State {
     public NtmState addTransition(NtmState state, Character symbol, Character replacingSymbol, Movement movement) {
         Validators.ensureNonNull(state, movement);
         
-        Set<Transition<NtmState>> possibleTransitions = CollectionUtils.getOrPutNew(transitions, symbol, HashSet::new);
-        Transition<NtmState> transition = new Transition<>(state, replacingSymbol, movement);
+        Set<TuringTransition<NtmState>> possibleTransitions = CollectionUtils.getOrPutNew(transitions, symbol, HashSet::new);
+        TuringTransition<NtmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
         possibleTransitions.add(transition);
         
         return this;
     }
     
-    public Set<Transition<NtmState>> transitions(Character symbol) {
+    public Set<TuringTransition<NtmState>> transitions(Character symbol) {
         return transitions.getOrDefault(symbol, Collections.EMPTY_SET);
     }
 }

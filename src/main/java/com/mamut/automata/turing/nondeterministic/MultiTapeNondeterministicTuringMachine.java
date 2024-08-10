@@ -9,9 +9,9 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.MultiTapeHeadCollection;
+import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.turing.MultiTapeNondeterministicState;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,9 +40,9 @@ public class MultiTapeNondeterministicTuringMachine<T extends MultiTapeNondeterm
         T state = controlUnit.getInternalState();
         List<Character> symbols = getHeadStream().map(ReadWriteHead::read).toList();
         List<Integer> offsets = getHeadStream().map(ReadWriteHead::getOffset).toList();
-        Set<List<Transition<T>>> possibleTransitions = state.transitions(symbols);
+        Set<List<TuringTransition<T>>> possibleTransitions = state.transitions(symbols);
         
-        for (List<Transition<T>> transitions : possibleTransitions) {
+        for (List<TuringTransition<T>> transitions : possibleTransitions) {
             if (testTransitions(visited, transitions)) {
                 return true;
             }
@@ -52,10 +52,10 @@ public class MultiTapeNondeterministicTuringMachine<T extends MultiTapeNondeterm
         return controlUnit.isAccepted();
     }
     
-    private boolean testTransitions(Set<List<Configuration<T>>> visited, List<Transition<T>> transitions) {
+    private boolean testTransitions(Set<List<Configuration<T>>> visited, List<TuringTransition<T>> transitions) {
         for (int i = 0; i < tapeHeads.getTapeCount(); i++) {
             ReadWriteHead head = tapeHeads.getHead(i);
-            Transition<T> transition = transitions.get(i);
+            TuringTransition<T> transition = transitions.get(i);
             Character replacingSymbol = transition.replacingSymbol();
             Movement movement = transition.movement();
 

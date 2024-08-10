@@ -6,7 +6,7 @@ package com.mamut.automata.turing.nondeterministic;
 
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeNondeterministicState;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
@@ -23,7 +23,7 @@ import java.util.Set;
  * @author Pc
  */
 public class MntmState implements MultiTapeNondeterministicState<MntmState> {
-    private final Map<List<Character>, Set<List<Transition<MntmState>>>> transitionMap;
+    private final Map<List<Character>, Set<List<TuringTransition<MntmState>>>> transitionMap;
     private int tapeCount;
     
     public MntmState() {
@@ -49,27 +49,28 @@ public class MntmState implements MultiTapeNondeterministicState<MntmState> {
         guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
-        List<Transition<MntmState>> transitions = new ArrayList<>();
+        List<TuringTransition<MntmState>> transitions = new ArrayList<>();
         for (int i = 0; i < tapeCount; i++) {
             TuringTransitionConfig config = configs[i];
             Character symbol = config.symbol();
             Character replacingSymbol = config.replacingSymbol();
             Movement movement = config.movement();
             
-            Transition<MntmState> transition = new Transition<>(state, replacingSymbol, movement);
+            TuringTransition<MntmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
             
             symbols.add(symbol);
             transitions.add(transition);
         }
         
-        Set<List<Transition<MntmState>>> possibleTransitions = CollectionUtils.getOrPutNew(transitionMap, symbols, HashSet::new);
+        Set<List<TuringTransition<MntmState>>> possibleTransitions = CollectionUtils.getOrPutNew(transitionMap,
+                symbols, HashSet::new);
         possibleTransitions.add(transitions);
         
         return this;
     }
     
     @Override
-    public Set<List<Transition<MntmState>>> transitions(List<Character> symbols) {
+    public Set<List<TuringTransition<MntmState>>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_SET);
     }
     

@@ -9,7 +9,7 @@ import com.mamut.automata.contracts.BacktrackableInputMechanism;
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
-import com.mamut.automata.pushdown.Transition;
+import com.mamut.automata.pushdown.PushdownTransition;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.HashSet;
@@ -82,12 +82,12 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         NpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
         
-        Set<Transition<NpdaState>> lambdaTransitions = CollectionUtils.union(
+        Set<PushdownTransition<NpdaState>> lambdaTransitions = CollectionUtils.union(
                 currentState.lambdaTransitions(storageSymbol), 
                 currentState.epsilonLambdaTransitions()
         );
         
-        for (Transition<NpdaState> lambdaTransition : lambdaTransitions) {
+        for (PushdownTransition<NpdaState> lambdaTransition : lambdaTransitions) {
             NpdaState nextState = lambdaTransition.nextState();
             StorageOperation operation = lambdaTransition.operation();
             
@@ -112,12 +112,12 @@ public class NondeterministicPushdownAutomaton implements Accepter {
         NpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
         
-        Set<Transition<NpdaState>> transitions = CollectionUtils.union(
+        Set<PushdownTransition<NpdaState>> transitions = CollectionUtils.union(
                 currentState.transitions(symbol, storageSymbol),
                 currentState.epsilonTransitions(symbol)
         );
         
-        for (Transition<NpdaState> transition : transitions) {
+        for (PushdownTransition<NpdaState> transition : transitions) {
             NpdaState nextState = transition.nextState();
             StorageOperation operation = transition.operation();
             

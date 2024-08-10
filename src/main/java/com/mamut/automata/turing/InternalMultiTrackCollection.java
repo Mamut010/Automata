@@ -4,6 +4,8 @@
  */
 package com.mamut.automata.turing;
 
+import com.mamut.automata.contracts.MultiTapeHeadCollection;
+import com.mamut.automata.contracts.MultiTapeCollection;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.util.CollectionUtils;

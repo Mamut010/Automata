@@ -10,7 +10,7 @@ import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.turing.AbstractSingleTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ public class TuringMachine extends AbstractSingleTapeTuringMachine<DtmState> {
         
         DtmState state = controlUnit.getInternalState();
         Character symbol = readWriteHead.read();
-        Transition<DtmState> transition = state.transition(symbol);
+        TuringTransition<DtmState> transition = state.transition(symbol);
         Set<Configuration<DtmState>> visited = new HashSet<>();
         
         while (transition !=  null) {

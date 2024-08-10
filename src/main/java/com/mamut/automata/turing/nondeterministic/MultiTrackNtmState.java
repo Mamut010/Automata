@@ -7,7 +7,7 @@ package com.mamut.automata.turing.nondeterministic;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeNondeterministicState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.util.CollectionUtils;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.Set;
  * @author Pc
  */
 public class MultiTrackNtmState implements MultiTapeNondeterministicState<MultiTrackNtmState> {
-    private final Map<List<Character>, Set<List<Transition<MultiTrackNtmState>>>> transitionMap;
+    private final Map<List<Character>, Set<List<TuringTransition<MultiTrackNtmState>>>> transitionMap;
     private int tapeCount;
     
     public MultiTrackNtmState() {
@@ -49,19 +49,19 @@ public class MultiTrackNtmState implements MultiTapeNondeterministicState<MultiT
         guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
-        List<Transition<MultiTrackNtmState>> transitions = new ArrayList<>();
+        List<TuringTransition<MultiTrackNtmState>> transitions = new ArrayList<>();
         for (int i = 0; i < tapeCount; i++) {
             MultiTrackTuringTransitionConfig config = configs[i];
             Character symbol = config.symbol();
             Character replacingSymbol = config.replacingSymbol();
             
-            Transition<MultiTrackNtmState> transition = new Transition<>(state, replacingSymbol, movement);
+            TuringTransition<MultiTrackNtmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
             
             symbols.add(symbol);
             transitions.add(transition);
         }
         
-        Set<List<Transition<MultiTrackNtmState>>> possibleTransitions = CollectionUtils.getOrPutNew(transitionMap,
+        Set<List<TuringTransition<MultiTrackNtmState>>> possibleTransitions = CollectionUtils.getOrPutNew(transitionMap,
                 symbols, HashSet::new);
         possibleTransitions.add(transitions);
         
@@ -69,7 +69,7 @@ public class MultiTrackNtmState implements MultiTapeNondeterministicState<MultiT
     }
     
     @Override
-    public Set<List<Transition<MultiTrackNtmState>>> transitions(List<Character> symbols) {
+    public Set<List<TuringTransition<MultiTrackNtmState>>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_SET);
     }
     

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mamut.automata.turing;
+package com.mamut.automata.pushdown;
 
 import com.mamut.automata.contracts.State;
 
@@ -10,6 +10,5 @@ import com.mamut.automata.contracts.State;
  *
  * @author Pc
  */
-public interface MultiTapeState extends State {
-    int getTapeCount();
+public record PushdownTransition<T extends State>(T nextState, StorageOperation operation) {
 }

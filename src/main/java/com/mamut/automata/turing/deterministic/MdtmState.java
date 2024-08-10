@@ -7,7 +7,7 @@ package com.mamut.automata.turing.deterministic;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeDeterministicState;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Pc
  */
 public class MdtmState implements MultiTapeDeterministicState<MdtmState> {
-    private final Map<List<Character>, List<Transition<MdtmState>>> transitionMap;
+    private final Map<List<Character>, List<TuringTransition<MdtmState>>> transitionMap;
     private int tapeCount;
     
     public MdtmState() {
@@ -46,14 +46,14 @@ public class MdtmState implements MultiTapeDeterministicState<MdtmState> {
         guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
-        List<Transition<MdtmState>> transitions = new ArrayList<>();
+        List<TuringTransition<MdtmState>> transitions = new ArrayList<>();
         for (int i = 0; i < tapeCount; i++) {
             TuringTransitionConfig config = configs[i];
             Character symbol = config.symbol();
             Character replacingSymbol = config.replacingSymbol();
             Movement movement = config.movement();
             
-            Transition<MdtmState> transition = new Transition<>(state, replacingSymbol, movement);
+            TuringTransition<MdtmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
             
             symbols.add(symbol);
             transitions.add(transition);
@@ -65,7 +65,7 @@ public class MdtmState implements MultiTapeDeterministicState<MdtmState> {
     }
     
     @Override
-    public List<Transition<MdtmState>> transitions(List<Character> symbols) {
+    public List<TuringTransition<MdtmState>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
     }
     

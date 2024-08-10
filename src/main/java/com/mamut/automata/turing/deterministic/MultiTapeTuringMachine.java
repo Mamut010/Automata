@@ -10,8 +10,8 @@ import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeDeterministicState;
-import com.mamut.automata.turing.MultiTapeHeadCollection;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.contracts.MultiTapeHeadCollection;
+import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class MultiTapeTuringMachine<T extends MultiTapeDeterministicState> exten
         
         T state = controlUnit.getInternalState();
         List<Character> symbols = getHeadStream().map(ReadWriteHead::read).toList();
-        List<Transition<T>> transitions = state.transitions(symbols);
+        List<TuringTransition<T>> transitions = state.transitions(symbols);
         Set<List<Configuration<T>>> visited = new HashSet<>();
         
         while (!transitions.isEmpty()) {
@@ -43,7 +43,7 @@ public class MultiTapeTuringMachine<T extends MultiTapeDeterministicState> exten
             
             for (int i = 0; i < tapeCount; i++) {
                 ReadWriteHead head = tapeHeads.getHead(i);
-                Transition<T> transition = transitions.get(i);
+                TuringTransition<T> transition = transitions.get(i);
                 Character replacingSymbol = transition.replacingSymbol();
                 Movement movement = transition.movement();
                 

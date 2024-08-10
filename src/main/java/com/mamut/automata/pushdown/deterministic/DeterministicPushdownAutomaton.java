@@ -9,7 +9,7 @@ import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.InputMechanism;
 import com.mamut.automata.pushdown.PdaStorageDevice;
 import com.mamut.automata.pushdown.StorageOperation;
-import com.mamut.automata.pushdown.Transition;
+import com.mamut.automata.pushdown.PushdownTransition;
 import com.mamut.automata.util.Validators;
 
 /**
@@ -59,7 +59,7 @@ public class DeterministicPushdownAutomaton implements Accepter {
             DpdaState currentState = controlUnit.getInternalState();
             char storageSymbol = storage.peek();
 
-            Transition<DpdaState> transition = currentState.transition(symbol, storageSymbol);
+            PushdownTransition<DpdaState> transition = currentState.transition(symbol, storageSymbol);
             if (transition == null) {
                 return false;
             }
@@ -84,8 +84,8 @@ public class DeterministicPushdownAutomaton implements Accepter {
     private boolean processLambdaTransition() {
         DpdaState currentState = controlUnit.getInternalState();
         char storageSymbol = storage.peek();
-        Transition<DpdaState> lambdaTransition = currentState.lambdaTransition(storageSymbol);
-        Transition<DpdaState> previousLambdaTransition = null;
+        PushdownTransition<DpdaState> lambdaTransition = currentState.lambdaTransition(storageSymbol);
+        PushdownTransition<DpdaState> previousLambdaTransition = null;
         
         int iterationCount = 0;
         final int ITERATION_LIMIT = 1 << 16;

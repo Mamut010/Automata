@@ -4,6 +4,7 @@
  */
 package com.mamut.automata.turing;
 
+import com.mamut.automata.contracts.MultiTapeCollection;
 import com.mamut.automata.contracts.Tape;
 import java.util.ArrayList;
 import java.util.List;

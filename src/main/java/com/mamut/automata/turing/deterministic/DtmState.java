@@ -6,7 +6,7 @@ package com.mamut.automata.turing.deterministic;
 
 import com.mamut.automata.contracts.State;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.util.Validators;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
  * @author Pc
  */
 public class DtmState implements State {
-    private final Map<Character, Transition<DtmState>> transitions;
+    private final Map<Character, TuringTransition<DtmState>> transitions;
     
     public DtmState() {
         transitions = new HashMap<>();
@@ -34,12 +34,12 @@ public class DtmState implements State {
     public DtmState addTransition(DtmState state, Character symbol, Character replacingSymbol, Movement movement) {
         Validators.ensureNonNull(state, movement);
         
-        Transition<DtmState> transition = new Transition<>(state, replacingSymbol, movement);
+        TuringTransition<DtmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
         transitions.put(symbol, transition);
         return this;
     }
     
-    public Transition<DtmState> transition(Character symbol) {
+    public TuringTransition<DtmState> transition(Character symbol) {
         return transitions.get(symbol);
     }
 }

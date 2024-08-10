@@ -10,5 +10,5 @@ import com.mamut.automata.contracts.State;
  *
  * @author Pc
  */
-public record Transition<T extends State>(T nextState, Character replacingSymbol, Movement movement) {
+public record TuringTransition<T extends State>(T nextState, Character replacingSymbol, Movement movement) {
 }

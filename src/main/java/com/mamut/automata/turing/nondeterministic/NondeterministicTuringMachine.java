@@ -10,7 +10,7 @@ import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.turing.AbstractSingleTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,9 +44,9 @@ public class NondeterministicTuringMachine extends AbstractSingleTapeTuringMachi
         NtmState currentState = controlUnit.getInternalState();
         Character currentSymbol = readWriteHead.read();
         int currentOffset = readWriteHead.getOffset();
-        Set<Transition<NtmState>> transitions = currentState.transitions(currentSymbol);
+        Set<TuringTransition<NtmState>> transitions = currentState.transitions(currentSymbol);
         
-        for (Transition<NtmState> transition : transitions) {
+        for (TuringTransition<NtmState> transition : transitions) {
             NtmState nextState = transition.nextState();
             Character replacingSymbol = transition.replacingSymbol();
             Movement movement = transition.movement();

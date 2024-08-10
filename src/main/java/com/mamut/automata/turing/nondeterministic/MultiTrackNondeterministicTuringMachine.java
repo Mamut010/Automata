@@ -7,7 +7,7 @@ package com.mamut.automata.turing.nondeterministic;
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.InternalMultiTrackCollection;
-import com.mamut.automata.turing.MultiTapeCollection;
+import com.mamut.automata.contracts.MultiTapeCollection;
 import java.util.function.Supplier;
 
 /**

@@ -7,7 +7,7 @@ package com.mamut.automata.turing.deterministic;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeDeterministicState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
-import com.mamut.automata.turing.Transition;
+import com.mamut.automata.turing.TuringTransition;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Pc
  */
 public class MultiTrackDtmState implements MultiTapeDeterministicState<MultiTrackDtmState> {
-    private final Map<List<Character>, List<Transition<MultiTrackDtmState>>> transitionMap;
+    private final Map<List<Character>, List<TuringTransition<MultiTrackDtmState>>> transitionMap;
     private int tapeCount;
     
     public MultiTrackDtmState() {
@@ -46,13 +46,13 @@ public class MultiTrackDtmState implements MultiTapeDeterministicState<MultiTrac
         guardTransition(state, configs);
         
         List<Character> symbols = new ArrayList<>();
-        List<Transition<MultiTrackDtmState>> transitions = new ArrayList<>();
+        List<TuringTransition<MultiTrackDtmState>> transitions = new ArrayList<>();
         for (int i = 0; i < tapeCount; i++) {
             MultiTrackTuringTransitionConfig config = configs[i];
             Character symbol = config.symbol();
             Character replacingSymbol = config.replacingSymbol();
             
-            Transition<MultiTrackDtmState> transition = new Transition<>(state, replacingSymbol, movement);
+            TuringTransition<MultiTrackDtmState> transition = new TuringTransition<>(state, replacingSymbol, movement);
             
             symbols.add(symbol);
             transitions.add(transition);
@@ -64,7 +64,7 @@ public class MultiTrackDtmState implements MultiTapeDeterministicState<MultiTrac
     }
     
     @Override
-    public List<Transition<MultiTrackDtmState>> transitions(List<Character> symbols) {
+    public List<TuringTransition<MultiTrackDtmState>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
     }
     

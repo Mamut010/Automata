@@ -75,7 +75,7 @@ public class MultiTapeNondeterministicTuringMachine<T extends MultiTapeNondeterm
     private void revertChanges(List<Character> previousSymbols, List<Integer> previousOffsets, T previousState) {
         controlUnit.setInternalState(previousState);
         
-        for (int i = 0; i < tapeHeads.getTapeCount(); i++) {
+        for (int i = tapeHeads.getTapeCount() - 1; i >= 0; i--) {
             ReadWriteHead head = tapeHeads.getHead(i);
             Character previousSymbol = previousSymbols.get(i);
             int previousOffset = previousOffsets.get(i);

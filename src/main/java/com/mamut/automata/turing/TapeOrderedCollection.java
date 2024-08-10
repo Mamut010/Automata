@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Pc
  */
-public class TapeOrderedCollection {
+public class TapeOrderedCollection implements MultiTapeCollection {
     protected final List<Tape> tapes;
     
     private int inputTapeIndex;
@@ -24,14 +24,17 @@ public class TapeOrderedCollection {
         outputTapeIndex = -1;
     }
     
+    @Override
     public int getTapeCount() {
         return tapes.size();
     }
     
+    @Override
     public int getInputTapeIndex() {
         return inputTapeIndex != -1 ? inputTapeIndex : 0;
     }
     
+    @Override
     public int getOutputTapeIndex() {
         return outputTapeIndex != -1 ? outputTapeIndex : tapes.size() - 1;
     }
@@ -44,6 +47,7 @@ public class TapeOrderedCollection {
         outputTapeIndex = ensureValidIndex(index);
     }
     
+    @Override
     public Tape getTape(int index) {
         ensureValidIndex(index);
         return tapes.get(index);

@@ -21,7 +21,8 @@ import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
 import com.mamut.automata.turing.MultiTapeState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
-import com.mamut.automata.turing.TapeHeadCollection;
+import com.mamut.automata.turing.DefaultMultiTapeHeadCollection;
+import com.mamut.automata.turing.MultiTapeHeadCollection;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.deterministic.*;
 import com.mamut.automata.turing.nondeterministic.*;
@@ -216,9 +217,9 @@ public class Automata {
     public static void testMdtm() {
         System.out.println("Testing MDTM1 - Language: w.#.w, w is a binary string");
         InitialStateAndTapeHeadCollection<MdtmState> config1 = mdtmConfig1();
-        MultiTapeTuringMachine mdtm1 = new MultiTapeTuringMachine(
+        MultiTapeTuringMachine<MdtmState> mdtm1 = new MultiTapeTuringMachine<>(
                 config1.collection(),
-                new DefaultControlUnit(config1.state())
+                new DefaultControlUnit<>(config1.state())
         );
         testAccepter(mdtm1, List.of("", "#", "000", "00#00", "10#10", "10#100", "01011#01011"));
         
@@ -226,9 +227,9 @@ public class Automata {
         
         System.out.println("Testing MDTM2 - Language: a^n.b^n.c^n, n >= 0");
         InitialStateAndTapeHeadCollection<MdtmState> config2 = mdtmConfig2();
-        MultiTapeTuringMachine mdtm2 = new MultiTapeTuringMachine(
+        MultiTapeTuringMachine<MdtmState> mdtm2 = new MultiTapeTuringMachine<>(
                 config2.collection(),
-                new DefaultControlUnit(config2.state())
+                new DefaultControlUnit<>(config2.state())
         );
         testAccepter(mdtm2, List.of("", "abc", "aabbcc", "aaccbb", "abccba", "aaaabbbbcccc", "1"));
     }
@@ -255,18 +256,18 @@ public class Automata {
     }
     
     public static void testMtdtm() {
-        System.out.println("Testing MTDTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
-        MtdtmState initialState = mtdtmConfig1();
-        DefaultTapeOrderedCollection tapes = new DefaultTapeOrderedCollection();
+        System.out.println("Testing MTDTM - Transducer to perform x --> 2x, x is a positive number in unary number system");
+        var initialState = mtdtmConfig();
+        var tapes = new DefaultTapeOrderedCollection();
         for (int i = 0; i < initialState.getTapeCount(); i++) {
             tapes.add(new InfiniteTape(BLANK));
         }
-        MultiTrackTuringMachine mtdtm1 = new MultiTrackTuringMachine(
+        MultiTrackTuringMachine mtdtm = new MultiTrackTuringMachine(
                 tapes,
-                new DefaultMultiTrackReadWriteHead(),
-                new DefaultControlUnit(initialState)
+                DefaultReadWriteHead::new,
+                new DefaultControlUnit<>(initialState)
         );
-        testTransducer(mtdtm1, List.of("", "#", "0", "1", "11", "111", "11111"));
+        testTransducer(mtdtm, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
     
     public static void testMtntm() {
@@ -619,7 +620,7 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
     }
     
     /**
@@ -673,7 +674,7 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q4, makeDefaultTapeHeadCollection(q4.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q4, makeMultiTapeHeadCollection(q4.getTapeCount()));
     }
     
     /**
@@ -742,7 +743,7 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
     }
     
     /**
@@ -797,14 +798,14 @@ public class Automata {
                         new TuringTransitionConfig('1', '1', Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeDefaultTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
     }
     
-    private static MtdtmState mtdtmConfig1() {
-        MtdtmState q0 = new MtdtmState();
-        MtdtmState q1 = new MtdtmState();
-        MtdtmState q2 = new MtdtmState();
-        MtdtmState HALT = new MtdtmState();
+    private static MultiTrackDtmState mtdtmConfig() {
+        MultiTrackDtmState q0 = new MultiTrackDtmState();
+        MultiTrackDtmState q1 = new MultiTrackDtmState();
+        MultiTrackDtmState q2 = new MultiTrackDtmState();
+        MultiTrackDtmState HALT = new MultiTrackDtmState();
         
         q0
                 .addTransition(HALT, Movements.stay(),
@@ -921,8 +922,8 @@ public class Automata {
         return q0;
     }
     
-    private static TapeHeadCollection makeDefaultTapeHeadCollection(int tapeCount) {
-        TapeHeadCollection tapeHeads = new TapeHeadCollection();
+    private static MultiTapeHeadCollection makeMultiTapeHeadCollection(int tapeCount) {
+        DefaultMultiTapeHeadCollection tapeHeads = new DefaultMultiTapeHeadCollection();
         for (int i = 0; i < tapeCount; i++) {
             tapeHeads.add(new InfiniteTape(BLANK), new DefaultReadWriteHead());
         }
@@ -931,5 +932,5 @@ public class Automata {
 
     public record InitialStateAndSymbol<T extends State>(T state, char symbol) {}
     
-    public record InitialStateAndTapeHeadCollection<T extends MultiTapeState>(T state, TapeHeadCollection collection) {}
+    public record InitialStateAndTapeHeadCollection<T extends MultiTapeState>(T state, MultiTapeHeadCollection collection) {}
 }

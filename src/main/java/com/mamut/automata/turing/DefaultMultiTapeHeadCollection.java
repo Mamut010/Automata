@@ -9,32 +9,26 @@ import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  *
  * @author Pc
  */
-public class TapeHeadCollection extends TapeOrderedCollection {
+public class DefaultMultiTapeHeadCollection extends TapeOrderedCollection implements MultiTapeHeadCollection {
     private final List<ReadWriteHead> heads;
     
-    public TapeHeadCollection() {
+    public DefaultMultiTapeHeadCollection() {
         heads = new ArrayList<>();
     }
     
     public void add(Tape tape, ReadWriteHead head) {
         Validators.ensureNonNull(tape, head);
-        
         tapes.add(tape);
         heads.add(head);
     }
     
+    @Override
     public ReadWriteHead getHead(int index) {
-        ensureValidIndex(index);
-        return heads.get(index);
-    }
-    
-    public Stream<ReadWriteHead> getHeadStream() {
-        return heads.stream();
+        return heads.get(ensureValidIndex(index));
     }
 }

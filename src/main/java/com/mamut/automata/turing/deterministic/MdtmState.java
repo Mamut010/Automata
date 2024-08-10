@@ -6,7 +6,7 @@ package com.mamut.automata.turing.deterministic;
 
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.MultiTapeState;
+import com.mamut.automata.turing.MultiTapeDeterministicState;
 import com.mamut.automata.turing.Transition;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author Pc
  */
-public class MdtmState implements MultiTapeState {
+public class MdtmState implements MultiTapeDeterministicState<MdtmState> {
     private final Map<List<Character>, List<Transition<MdtmState>>> transitionMap;
     private int tapeCount;
     
@@ -64,6 +64,7 @@ public class MdtmState implements MultiTapeState {
         return this;
     }
     
+    @Override
     public List<Transition<MdtmState>> transitions(List<Character> symbols) {
         return transitionMap.getOrDefault(symbols, Collections.EMPTY_LIST);
     }

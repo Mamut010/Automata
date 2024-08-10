@@ -9,7 +9,7 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.turing.TapeHeadCollection;
+import com.mamut.automata.turing.MultiTapeHeadCollection;
 import com.mamut.automata.turing.Transition;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Set;
  * @author Pc
  */
 public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTuringMachine<MntmState> {
-    public MultiTapeNondeterministicTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<MntmState> controlUnit) {
+    public MultiTapeNondeterministicTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<MntmState> controlUnit) {
         super(tapeHeads, controlUnit);
     }
 
@@ -36,8 +36,8 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
         }
         
         MntmState state = controlUnit.getInternalState();
-        List<Character> symbols = tapeHeads.getHeadStream().map(ReadWriteHead::read).toList();
-        List<Integer> offsets = tapeHeads.getHeadStream().map(ReadWriteHead::getOffset).toList();
+        List<Character> symbols = getHeadStream().map(ReadWriteHead::read).toList();
+        List<Integer> offsets = getHeadStream().map(ReadWriteHead::getOffset).toList();
         Set<List<Transition<MntmState>>> possibleTransitions = state.transitions(symbols);
         
         for (List<Transition<MntmState>> transitions : possibleTransitions) {

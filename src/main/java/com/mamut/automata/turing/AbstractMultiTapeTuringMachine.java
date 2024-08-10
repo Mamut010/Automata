@@ -12,6 +12,8 @@ import com.mamut.automata.contracts.Transducer;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -19,10 +21,10 @@ import java.util.List;
  * @param <T> The State type
  */
 public abstract class AbstractMultiTapeTuringMachine<T extends MultiTapeState> implements Accepter, Transducer {
-    protected final TapeHeadCollection tapeHeads;
+    protected final MultiTapeHeadCollection tapeHeads;
     protected final ControlUnit<T> controlUnit;
     
-    public AbstractMultiTapeTuringMachine(TapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
+    public AbstractMultiTapeTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
         Validators.ensureNonNull(tapeHeads, controlUnit);
         
         this.tapeHeads = tapeHeads;
@@ -79,6 +81,12 @@ public abstract class AbstractMultiTapeTuringMachine<T extends MultiTapeState> i
             configs.add(new Configuration(currentState, offset, tapeSnapshot));
         }
         return configs;
+    }
+    
+    protected Stream<ReadWriteHead> getHeadStream() {
+        return IntStream
+                .range(0, tapeHeads.getTapeCount())
+                .mapToObj(i -> tapeHeads.getHead(i));
     }
     
     private void ensureCompatibleTapeCount() {

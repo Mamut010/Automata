@@ -14,14 +14,13 @@ import com.mamut.automata.pushdown.DefaultStorageDevice;
 import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import com.mamut.automata.pushdown.nondeterministic.*;
-import com.mamut.automata.turing.DefaultMultiTrackReadWriteHead;
 import com.mamut.automata.turing.DefaultReadWriteHead;
-import com.mamut.automata.turing.DefaultTapeOrderedCollection;
+import com.mamut.automata.turing.TapeOrderedCollection;
 import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
 import com.mamut.automata.turing.MultiTapeState;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
-import com.mamut.automata.turing.DefaultMultiTapeHeadCollection;
+import com.mamut.automata.turing.MultiTapeHeadPairCollection;
 import com.mamut.automata.turing.MultiTapeHeadCollection;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.deterministic.*;
@@ -258,7 +257,7 @@ public class Automata {
     public static void testMtdtm() {
         System.out.println("Testing MTDTM - Transducer to perform x --> 2x, x is a positive number in unary number system");
         var initialState = mtdtmConfig();
-        var tapes = new DefaultTapeOrderedCollection();
+        var tapes = new TapeOrderedCollection();
         for (int i = 0; i < initialState.getTapeCount(); i++) {
             tapes.add(new InfiniteTape(BLANK));
         }
@@ -272,17 +271,17 @@ public class Automata {
     
     public static void testMtntm() {
         System.out.println("Testing MTNTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
-        MtntmState initialState = mtntmConfig1();
-        DefaultTapeOrderedCollection tapes = new DefaultTapeOrderedCollection();
+        var initialState = mtntmConfig1();
+        var tapes = new TapeOrderedCollection();
         for (int i = 0; i < initialState.getTapeCount(); i++) {
             tapes.add(new InfiniteTape(BLANK));
         }
-        MultiTrackNondeterministicTuringMachine mtntm1 = new MultiTrackNondeterministicTuringMachine(
+        MultiTrackNondeterministicTuringMachine mtntm = new MultiTrackNondeterministicTuringMachine(
                 tapes,
-                new DefaultMultiTrackReadWriteHead(),
-                new DefaultControlUnit(initialState)
+                DefaultReadWriteHead::new,
+                new DefaultControlUnit<>(initialState)
         );
-        testTransducer(mtntm1, List.of("", "#", "0", "1", "11", "111", "11111"));
+        testTransducer(mtntm, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
     
     /**
@@ -852,11 +851,11 @@ public class Automata {
         return q0;
     }
     
-    private static MtntmState mtntmConfig1() {
-        MtntmState q0 = new MtntmState();
-        MtntmState q1 = new MtntmState();
-        MtntmState q2 = new MtntmState();
-        MtntmState HALT = new MtntmState();
+    private static MultiTrackNtmState mtntmConfig1() {
+        MultiTrackNtmState q0 = new MultiTrackNtmState();
+        MultiTrackNtmState q1 = new MultiTrackNtmState();
+        MultiTrackNtmState q2 = new MultiTrackNtmState();
+        MultiTrackNtmState HALT = new MultiTrackNtmState();
         
         q0
                 .addTransition(HALT, Movements.stay(),
@@ -900,7 +899,7 @@ public class Automata {
                         new MultiTrackTuringTransitionConfig('1', '1')
                 );
                
-        // Additional nondeterministic paths
+        // Additional arbitrary nondeterministic paths
         q0
                 .addTransition(q1, Movements.left(),
                         new MultiTrackTuringTransitionConfig('1', '1'),
@@ -917,13 +916,17 @@ public class Automata {
                 .addSelfLoop(Movements.right(),
                         new MultiTrackTuringTransitionConfig(BLANK, BLANK),
                         new MultiTrackTuringTransitionConfig(BLANK, BLANK)
+                )               
+                .addSelfLoop(Movements.stay(),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK),
+                        new MultiTrackTuringTransitionConfig(BLANK, BLANK)
                 );
         
         return q0;
     }
     
     private static MultiTapeHeadCollection makeMultiTapeHeadCollection(int tapeCount) {
-        DefaultMultiTapeHeadCollection tapeHeads = new DefaultMultiTapeHeadCollection();
+        MultiTapeHeadPairCollection tapeHeads = new MultiTapeHeadPairCollection();
         for (int i = 0; i < tapeCount; i++) {
             tapeHeads.add(new InfiniteTape(BLANK), new DefaultReadWriteHead());
         }

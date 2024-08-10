@@ -10,6 +10,7 @@ import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeHeadCollection;
+import com.mamut.automata.turing.MultiTapeNondeterministicState;
 import com.mamut.automata.turing.Transition;
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +19,10 @@ import java.util.Set;
 /**
  *
  * @author Pc
+ * @param <T> The State type
  */
-public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTuringMachine<MntmState> {
-    public MultiTapeNondeterministicTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<MntmState> controlUnit) {
+public class MultiTapeNondeterministicTuringMachine<T extends MultiTapeNondeterministicState> extends AbstractMultiTapeTuringMachine<T> {
+    public MultiTapeNondeterministicTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
         super(tapeHeads, controlUnit);
     }
 
@@ -29,18 +31,18 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
         return testImpl(new HashSet<>());
     }
     
-    private boolean testImpl(Set<List<Configuration<MntmState>>> visited) {
-        List<Configuration<MntmState>> configs = getCurrentConfigurations();
+    private boolean testImpl(Set<List<Configuration<T>>> visited) {
+        List<Configuration<T>> configs = getCurrentConfigurations();
         if (!visited.add(configs)) {
             return false;
         }
         
-        MntmState state = controlUnit.getInternalState();
+        T state = controlUnit.getInternalState();
         List<Character> symbols = getHeadStream().map(ReadWriteHead::read).toList();
         List<Integer> offsets = getHeadStream().map(ReadWriteHead::getOffset).toList();
-        Set<List<Transition<MntmState>>> possibleTransitions = state.transitions(symbols);
+        Set<List<Transition<T>>> possibleTransitions = state.transitions(symbols);
         
-        for (List<Transition<MntmState>> transitions : possibleTransitions) {
+        for (List<Transition<T>> transitions : possibleTransitions) {
             if (testTransitions(visited, transitions)) {
                 return true;
             }
@@ -50,10 +52,10 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
         return controlUnit.isAccepted();
     }
     
-    private boolean testTransitions(Set<List<Configuration<MntmState>>> visited, List<Transition<MntmState>> transitions) {
+    private boolean testTransitions(Set<List<Configuration<T>>> visited, List<Transition<T>> transitions) {
         for (int i = 0; i < tapeHeads.getTapeCount(); i++) {
             ReadWriteHead head = tapeHeads.getHead(i);
-            Transition<MntmState> transition = transitions.get(i);
+            Transition<T> transition = transitions.get(i);
             Character replacingSymbol = transition.replacingSymbol();
             Movement movement = transition.movement();
 
@@ -64,13 +66,13 @@ public class MultiTapeNondeterministicTuringMachine extends AbstractMultiTapeTur
             head.setOffset(nextOffset);
         }
         
-        MntmState state = transitions.get(0).nextState();
+        T state = transitions.get(0).nextState();
         controlUnit.setInternalState(state);
         
         return testImpl(visited);
     }
     
-    private void revertChanges(List<Character> previousSymbols, List<Integer> previousOffsets, MntmState previousState) {
+    private void revertChanges(List<Character> previousSymbols, List<Integer> previousOffsets, T previousState) {
         controlUnit.setInternalState(previousState);
         
         for (int i = 0; i < tapeHeads.getTapeCount(); i++) {

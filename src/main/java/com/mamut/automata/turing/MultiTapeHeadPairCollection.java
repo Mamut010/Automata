@@ -14,10 +14,10 @@ import java.util.List;
  *
  * @author Pc
  */
-public class DefaultMultiTapeHeadCollection extends TapeOrderedCollection implements MultiTapeHeadCollection {
+public class MultiTapeHeadPairCollection extends GeneralTapeOrderedCollection implements MultiTapeHeadCollection {
     private final List<ReadWriteHead> heads;
     
-    public DefaultMultiTapeHeadCollection() {
+    public MultiTapeHeadPairCollection() {
         heads = new ArrayList<>();
     }
     

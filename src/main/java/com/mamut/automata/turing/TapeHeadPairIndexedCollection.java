@@ -4,21 +4,21 @@
  */
 package com.mamut.automata.turing;
 
-import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.contracts.Tape;
 import com.mamut.automata.util.Validators;
 import java.util.ArrayList;
 import java.util.List;
+import com.mamut.automata.contracts.TapeHeadIndexedCollection;
 
 /**
  *
  * @author Pc
  */
-public class MultiTapeHeadPairCollection extends GeneralTapeOrderedCollection implements MultiTapeHeadCollection {
+public class TapeHeadPairIndexedCollection extends GeneralTapeIndexedCollection implements TapeHeadIndexedCollection {
     private final List<ReadWriteHead> heads;
     
-    public MultiTapeHeadPairCollection() {
+    public TapeHeadPairIndexedCollection() {
         heads = new ArrayList<>();
     }
     

@@ -9,12 +9,12 @@ import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
-import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.turing.MultiTapeNondeterministicState;
 import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.mamut.automata.contracts.TapeHeadIndexedCollection;
 
 /**
  *
@@ -22,7 +22,7 @@ import java.util.Set;
  * @param <T> The State type
  */
 public class MultiTapeNondeterministicTuringMachine<T extends MultiTapeNondeterministicState> extends AbstractMultiTapeTuringMachine<T> {
-    public MultiTapeNondeterministicTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
+    public MultiTapeNondeterministicTuringMachine(TapeHeadIndexedCollection tapeHeads, ControlUnit<T> controlUnit) {
         super(tapeHeads, controlUnit);
     }
 

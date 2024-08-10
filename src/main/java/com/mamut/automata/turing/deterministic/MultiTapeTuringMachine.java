@@ -10,11 +10,11 @@ import com.mamut.automata.turing.AbstractMultiTapeTuringMachine;
 import com.mamut.automata.turing.Configuration;
 import com.mamut.automata.turing.Movement;
 import com.mamut.automata.turing.MultiTapeDeterministicState;
-import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.turing.TuringTransition;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.mamut.automata.contracts.TapeHeadIndexedCollection;
 
 /**
  *
@@ -22,7 +22,7 @@ import java.util.Set;
  * @param <T> The State type
  */
 public class MultiTapeTuringMachine<T extends MultiTapeDeterministicState> extends AbstractMultiTapeTuringMachine<T> {
-    public MultiTapeTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
+    public MultiTapeTuringMachine(TapeHeadIndexedCollection tapeHeads, ControlUnit<T> controlUnit) {
         super(tapeHeads, controlUnit);
     }
     

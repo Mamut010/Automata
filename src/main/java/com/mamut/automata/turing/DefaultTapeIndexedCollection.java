@@ -11,7 +11,7 @@ import com.mamut.automata.util.Validators;
  *
  * @author Pc
  */
-public class TapeOrderedCollection extends GeneralTapeOrderedCollection {
+public class DefaultTapeIndexedCollection extends GeneralTapeIndexedCollection {
     public void add(Tape tape) {
         Validators.ensureNonNull(tape);
         tapes.add(tape);

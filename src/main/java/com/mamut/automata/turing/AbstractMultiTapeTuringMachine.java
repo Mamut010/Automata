@@ -4,7 +4,6 @@
  */
 package com.mamut.automata.turing;
 
-import com.mamut.automata.contracts.MultiTapeHeadCollection;
 import com.mamut.automata.contracts.MultiTapeState;
 import com.mamut.automata.contracts.Accepter;
 import com.mamut.automata.contracts.ControlUnit;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import com.mamut.automata.contracts.TapeHeadIndexedCollection;
 
 /**
  *
@@ -23,10 +23,10 @@ import java.util.stream.Stream;
  * @param <T> The State type
  */
 public abstract class AbstractMultiTapeTuringMachine<T extends MultiTapeState> implements Accepter, Transducer {
-    protected final MultiTapeHeadCollection tapeHeads;
+    protected final TapeHeadIndexedCollection tapeHeads;
     protected final ControlUnit<T> controlUnit;
     
-    public AbstractMultiTapeTuringMachine(MultiTapeHeadCollection tapeHeads, ControlUnit<T> controlUnit) {
+    public AbstractMultiTapeTuringMachine(TapeHeadIndexedCollection tapeHeads, ControlUnit<T> controlUnit) {
         Validators.ensureNonNull(tapeHeads, controlUnit);
         
         this.tapeHeads = tapeHeads;
@@ -92,8 +92,17 @@ public abstract class AbstractMultiTapeTuringMachine<T extends MultiTapeState> i
     }
     
     private void ensureCompatibleTapeCount() {
-        if (tapeHeads.getTapeCount() == 0 || controlUnit.getInternalState().getTapeCount() != tapeHeads.getTapeCount()) {
-            throw new IllegalStateException();
+        String msg = null;
+        
+        if (tapeHeads.getTapeCount() == 0) {
+            msg = "No tape found in the collection";
+        }
+        else if (controlUnit.getInternalState().getTapeCount() != tapeHeads.getTapeCount()) {
+            msg = "Incompatible number of tapes per transition and number of tapes in the collection";
+        }
+        
+        if (msg != null) {
+            throw new IllegalStateException(msg);
         }
     }
 }

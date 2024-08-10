@@ -8,9 +8,6 @@ package com.mamut.automata.contracts;
  *
  * @author Pc
  */
-public interface MultiTapeCollection {
-    int getTapeCount();
-    int getInputTapeIndex();
-    int getOutputTapeIndex();
-    Tape getTape(int index);
+public interface TapeHeadIndexedCollection extends TapeIndexedCollection {
+    ReadWriteHead getHead(int index);
 }

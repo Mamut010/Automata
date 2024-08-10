@@ -13,17 +13,17 @@ import com.mamut.automata.pushdown.StorageOperations;
 import com.mamut.automata.pushdown.deterministic.*;
 import com.mamut.automata.pushdown.nondeterministic.*;
 import com.mamut.automata.turing.DefaultReadWriteHead;
-import com.mamut.automata.turing.TapeOrderedCollection;
+import com.mamut.automata.turing.DefaultTapeIndexedCollection;
 import com.mamut.automata.turing.InfiniteTape;
 import com.mamut.automata.turing.Movements;
 import com.mamut.automata.turing.MultiTrackTuringTransitionConfig;
-import com.mamut.automata.turing.MultiTapeHeadPairCollection;
-import com.mamut.automata.contracts.MultiTapeHeadCollection;
+import com.mamut.automata.turing.TapeHeadPairIndexedCollection;
 import com.mamut.automata.turing.TuringTransitionConfig;
 import com.mamut.automata.turing.deterministic.*;
 import com.mamut.automata.turing.nondeterministic.*;
 import java.util.List;
 import java.util.Set;
+import com.mamut.automata.contracts.TapeHeadIndexedCollection;
 
 /**
  *
@@ -253,30 +253,22 @@ public class Automata {
     
     public static void testMtdtm() {
         System.out.println("Testing MTDTM - Transducer to perform x --> 2x, x is a positive number in unary number system");
-        var initialState = mtdtmConfig();
-        var tapes = new TapeOrderedCollection();
-        for (int i = 0; i < initialState.getTapeCount(); i++) {
-            tapes.add(new InfiniteTape(BLANK));
-        }
+        InitialStateAndTapeCollection<MultiTrackDtmState> config = mtdtmConfig();
         MultiTrackTuringMachine mtdtm = new MultiTrackTuringMachine(
-                tapes,
+                config.collection(),
                 DefaultReadWriteHead::new,
-                new DefaultControlUnit<>(initialState)
+                new DefaultControlUnit<>(config.state())
         );
         testTransducer(mtdtm, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
     
     public static void testMtntm() {
         System.out.println("Testing MTNTM1 - Transducer to perform x --> 2x, x is a positive number in unary number system");
-        var initialState = mtntmConfig1();
-        var tapes = new TapeOrderedCollection();
-        for (int i = 0; i < initialState.getTapeCount(); i++) {
-            tapes.add(new InfiniteTape(BLANK));
-        }
+        InitialStateAndTapeCollection<MultiTrackNtmState> config = mtntmConfig();
         MultiTrackNondeterministicTuringMachine mtntm = new MultiTrackNondeterministicTuringMachine(
-                tapes,
+                config.collection(),
                 DefaultReadWriteHead::new,
-                new DefaultControlUnit<>(initialState)
+                new DefaultControlUnit<>(config.state())
         );
         testTransducer(mtntm, List.of("", "#", "0", "1", "11", "111", "11111"));
     }
@@ -616,7 +608,7 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeTapeHeadIndexedCollection(q0.getTapeCount()));
     }
     
     /**
@@ -670,7 +662,7 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q4, makeMultiTapeHeadCollection(q4.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q4, makeTapeHeadIndexedCollection(q4.getTapeCount()));
     }
     
     /**
@@ -739,11 +731,11 @@ public class Automata {
                         new TuringTransitionConfig(BLANK, BLANK, Movements.stay())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeTapeHeadIndexedCollection(q0.getTapeCount()));
     }
     
     /**
-     * Multi-tape Turing Machine simulating Multi-track Turing Machine to double x --> 2x, x is a positive number in unary number system
+     * Multi-tape Turing Machine simulating a Multi-track Turing Machine to double x --> 2x, x is a positive number in unary number system
      * @return The initial state and tape head collection
      */
     public static InitialStateAndTapeHeadCollection<MntmState> mntmConfig2() {
@@ -794,10 +786,14 @@ public class Automata {
                         new TuringTransitionConfig('1', '1', Movements.right())
                 );
         
-        return new InitialStateAndTapeHeadCollection<>(q0, makeMultiTapeHeadCollection(q0.getTapeCount()));
+        return new InitialStateAndTapeHeadCollection<>(q0, makeTapeHeadIndexedCollection(q0.getTapeCount()));
     }
     
-    private static MultiTrackDtmState mtdtmConfig() {
+    /**
+     * Multi-track Turing Machine to double x --> 2x, x is a positive number in unary number system
+     * @return The initial state
+     */
+    private static InitialStateAndTapeCollection<MultiTrackDtmState> mtdtmConfig() {
         MultiTrackDtmState q0 = new MultiTrackDtmState();
         MultiTrackDtmState q1 = new MultiTrackDtmState();
         MultiTrackDtmState q2 = new MultiTrackDtmState();
@@ -845,10 +841,14 @@ public class Automata {
                         new MultiTrackTuringTransitionConfig('1', '1')
                 );
         
-        return q0;
+        return new InitialStateAndTapeCollection<>(q0, makeTapeIndexedCollection(q0.getTapeCount()));
     }
     
-    private static MultiTrackNtmState mtntmConfig1() {
+    /**
+     * Multi-track Non-deterministic Turing Machine to double x --> 2x, x is a positive number in unary number system
+     * @return The initial state
+     */
+    private static InitialStateAndTapeCollection<MultiTrackNtmState> mtntmConfig() {
         MultiTrackNtmState q0 = new MultiTrackNtmState();
         MultiTrackNtmState q1 = new MultiTrackNtmState();
         MultiTrackNtmState q2 = new MultiTrackNtmState();
@@ -919,18 +919,28 @@ public class Automata {
                         new MultiTrackTuringTransitionConfig(BLANK, BLANK)
                 );
         
-        return q0;
+        return new InitialStateAndTapeCollection<>(q0, makeTapeIndexedCollection(q0.getTapeCount()));
     }
     
-    private static MultiTapeHeadCollection makeMultiTapeHeadCollection(int tapeCount) {
-        MultiTapeHeadPairCollection tapeHeads = new MultiTapeHeadPairCollection();
+    private static TapeHeadIndexedCollection makeTapeHeadIndexedCollection(int tapeCount) {
+        TapeHeadPairIndexedCollection tapeHeads = new TapeHeadPairIndexedCollection();
         for (int i = 0; i < tapeCount; i++) {
             tapeHeads.add(new InfiniteTape(BLANK), new DefaultReadWriteHead());
         }
         return tapeHeads;
     }
+    
+    private static TapeIndexedCollection makeTapeIndexedCollection(int tapeCount) {
+        DefaultTapeIndexedCollection tapes = new DefaultTapeIndexedCollection();
+        for (int i = 0; i < tapeCount; i++) {
+            tapes.add(new InfiniteTape(BLANK));
+        }
+        return tapes;
+    }
 
     public record InitialStateAndSymbol<T extends State>(T state, char symbol) {}
     
-    public record InitialStateAndTapeHeadCollection<T extends MultiTapeState>(T state, MultiTapeHeadCollection collection) {}
+    public record InitialStateAndTapeHeadCollection<T extends MultiTapeState>(T state, TapeHeadIndexedCollection collection) {}
+    
+    public record InitialStateAndTapeCollection<T extends MultiTapeState>(T state, TapeIndexedCollection collection) {}
 }

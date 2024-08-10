@@ -7,8 +7,8 @@ package com.mamut.automata.turing.nondeterministic;
 import com.mamut.automata.contracts.ControlUnit;
 import com.mamut.automata.contracts.ReadWriteHead;
 import com.mamut.automata.turing.MultiTrackCollection;
-import com.mamut.automata.contracts.MultiTapeCollection;
 import java.util.function.Supplier;
+import com.mamut.automata.contracts.TapeIndexedCollection;
 
 /**
  *
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 public class MultiTrackNondeterministicTuringMachine extends MultiTapeNondeterministicTuringMachine<MultiTrackNtmState> {
     public MultiTrackNondeterministicTuringMachine(
-            MultiTapeCollection tapes,
+            TapeIndexedCollection tapes,
             Supplier<ReadWriteHead> headCreator, 
             ControlUnit<MultiTrackNtmState> controlUnit
     ) {

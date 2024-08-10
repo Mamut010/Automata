@@ -4,22 +4,22 @@
  */
 package com.mamut.automata.turing;
 
-import com.mamut.automata.contracts.MultiTapeCollection;
 import com.mamut.automata.contracts.Tape;
 import java.util.ArrayList;
 import java.util.List;
+import com.mamut.automata.contracts.TapeIndexedCollection;
 
 /**
  *
  * @author Pc
  */
-public class GeneralTapeOrderedCollection implements MultiTapeCollection {
+public class GeneralTapeIndexedCollection implements TapeIndexedCollection {
     protected final List<Tape> tapes;
     
     private int inputTapeIndex;
     private int outputTapeIndex;
     
-    public GeneralTapeOrderedCollection() {
+    public GeneralTapeIndexedCollection() {
         tapes = new ArrayList<>();
         inputTapeIndex = -1;
         outputTapeIndex = -1;
@@ -56,7 +56,7 @@ public class GeneralTapeOrderedCollection implements MultiTapeCollection {
     
     protected int ensureValidIndex(int index) {
         if (index < 0 || index >= tapes.size()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid index. Index must be between 0 or the number of tapes");
         }
         return index;
     }
